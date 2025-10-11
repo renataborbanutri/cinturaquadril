@@ -8,7 +8,7 @@
   <style>
     :root{
       --rose-50:#fff7f9; --rose-100:#ffe9f0; --rose-200:#ffd3df; --rose-300:#ffb1c5; --rose-400:#ff8fb0; --rose-500:#ff6b97;
-      --ink-700:#2b2e38; --ink-500:#4b4f5c; --ink-300:#7a7f91; --ok:#10b981; --warn:#f59e0b; --bad:#ef4444;
+      --ink-900:#111827; --ink-700:#2b2e38; --ink-500:#4b4f5c; --ink-300:#7a7f91; --ok:#10b981; --warn:#f59e0b; --bad:#ef4444;
       --card-shadow:0 10px 25px rgba(43,46,56,.08);
     }
     *{box-sizing:border-box}
@@ -43,6 +43,8 @@
     .footer{margin:28px 0 8px;text-align:center;color:var(--ink-300);font-size:12px}
     .toast{position:fixed;right:16px;bottom:16px;background:#111827;color:#fff;padding:12px 14px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;transform:translateY(6px)}
     .toast.show{opacity:1;pointer-events:auto;transform:translateY(0)}
+    .debug{margin-top:8px;font-size:12px;color:var(--ink-900);background:#fffbe6;border:1px solid #fde68a;padding:8px;border-radius:8px}
+    .debug pre{white-space:pre-wrap;word-break:break-word;margin:0}
   </style>
 </head>
 <body>
@@ -55,7 +57,9 @@
           <span class="pill">⚖️ RCQ – Cintura/Quadril</span>
           <span class="pill">📲 Mobile-friendly</span>
           <span class="pill">🗂️ Exporta CSV</span>
+          <button id="btnPing" class="btn secondary" type="button" title="Testar conexão com o Sheets">🔌 Testar conexão</button>
         </div>
+        <div id="pingBox" class="debug hide"><strong>Ping:</strong> <pre id="pingOut"></pre></div>
       </div>
 
       <div class="card">
@@ -171,6 +175,7 @@
   <div id="toast" class="toast" role="status" aria-live="polite">Status</div>
 
   <script>
+    const DEBUG = true;
     // 🔗 Webhook do seu Apps Script (produção /exec)
     const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbym4vgfn6HGvTmgOZ27OlWZe-z2ucZfOIkwolB85XAaVqccxk9YyxBkMwQmcohzIGPd/exec";
 
@@ -200,6 +205,15 @@
       setTimeout(()=>t.classList.remove('show'), 1600);
     }
 
+    // Debug helpers
+    function log(...args){ if(DEBUG) console.log('[RCQ]', ...args); }
+    function showPing(obj){
+      const box = document.getElementById('pingBox');
+      const out = document.getElementById('pingOut');
+      out.textContent = typeof obj === 'string' ? obj : JSON.stringify(obj, null, 2);
+      box.classList.remove('hide');
+    }
+
     // Envio ao webhook (form-urlencoded) com fallback
     async function postWebhook(doc){
       if(!WEBHOOK_URL){ return {ok:false, msg:'WEBHOOK_URL vazio'} }
@@ -219,6 +233,15 @@
       }
     }
 
+    // Ping button
+    document.getElementById('btnPing').addEventListener('click', async ()=>{
+      try{
+        const res = await fetch(WEBHOOK_URL, { method:'GET' });
+        const txt = await res.text();
+        showPing(txt);
+      }catch(e){ showPing('Erro ao contatar webhook'); }
+    });
+
     // Lead form
     const leadForm = document.getElementById('leadForm');
     const afterLead = document.getElementById('afterLead');
@@ -226,31 +249,31 @@
 
     leadForm.addEventListener('submit', async (e)=>{
       e.preventDefault();
-      const fd = new FormData(leadForm);
-      const payload = Object.fromEntries(fd.entries());
-      const doc = {
-        nome: payload.nome?.trim(),
-        email: payload.email?.trim(),
-        whats: payload.whats?.trim(),
-        idade: payload.idade?.trim(),
-        cidade: payload.cidade?.trim(),
-        sexo: payload.sexoLead,
-        ts: new Date().toISOString()
-      };
-
-      // Guarda local
-      leads.push(doc); saveLeads();
-
-      // Envia para webhook (form-urlencoded)
-      const sent = await postWebhook(doc);
-
-      // Feedback + liberar teste
+      try{
+        const fd = new FormData(leadForm);
+        const payload = Object.fromEntries(fd.entries());
+        const doc = {
+          nome: (payload.nome||'').trim(),
+          email: (payload.email||'').trim(),
+          whats: (payload.whats||'').trim(),
+          idade: (payload.idade||'').trim(),
+          cidade: (payload.cidade||'').trim(),
+          sexo: payload.sexoLead || '',
+          ts: new Date().toISOString()
+        };
+        // Guarda local
+        leads.push(doc); saveLeads();
+        // Envia (não bloqueia UI se falhar)
+        postWebhook(doc).then(r=>log('lead sent', r));
+      }catch(err){ log('lead err', err); }
+      // Sempre liberar o teste
       afterLead.classList.remove('hide');
       testCard.classList.remove('hide');
-      document.getElementById('sexo').value = payload.sexoLead || "";
+      const sexoSel = document.getElementById('sexo');
+      const sexoLead = document.getElementById('sexoLead').value;
+      if(sexoSel && sexoLead) sexoSel.value = sexoLead;
       testCard.scrollIntoView({behavior:'smooth'});
-
-      showToast(sent.ok ? 'Lead enviado ao Google Sheets!' : 'Lead salvo localmente (falha no envio)');
+      showToast('Lead salvo! (enviando ao Sheets)');
     });
 
     // Exportações
@@ -260,10 +283,8 @@
     });
     document.getElementById('copyCsv').addEventListener('click', async ()=>{
       if(!leads.length){ showToast('Sem dados para copiar.'); return; }
-      try{
-        await navigator.clipboard.writeText(toCsv(leads));
-        showToast('CSV copiado!');
-      }catch{ showToast('Não foi possível copiar.'); }
+      try{ await navigator.clipboard.writeText(toCsv(leads)); showToast('CSV copiado!'); }
+      catch{ showToast('Não foi possível copiar.'); }
     });
 
     // Cálculo WHR (RCQ)
@@ -273,7 +294,6 @@
     const statusLine = document.getElementById('statusLine');
 
     function fmt(x){ return (Math.round(Number(x)*100)/100).toFixed(2); }
-
     function classify(sexo, rcq){
       if(sexo === 'F'){
         return rcq < 0.80 ? {tag:'ok', label:'Ideal', msg:'Parabéns! Sua relação cintura/quadril está em faixa ideal (mulheres < 0,80). Continue com alimentação rica em proteínas e fibras.'}
@@ -287,21 +307,21 @@
 
     whrForm.addEventListener('submit', async (e)=>{
       e.preventDefault();
-      const fd = new FormData(whrForm);
-      const sexo = fd.get('sexo');
-      const c = parseFloat(fd.get('cintura'));
-      const q = parseFloat(fd.get('quadril'));
-      if(!sexo || !c || !q || q <= 0){ return; }
+      try{
+        const fd = new FormData(whrForm);
+        const sexo = fd.get('sexo');
+        const c = parseFloat(fd.get('cintura'));
+        const q = parseFloat(fd.get('quadril'));
+        if(!sexo || !c || !q || q <= 0){ showToast('Preencha todos os campos do teste'); return; }
 
-      const rcq = c / q;
-      const klass = classify(sexo, rcq);
-      resultBox.classList.remove('hide');
-      ratioLine.textContent = `RCQ: ${fmt(rcq)}`;
-      statusLine.innerHTML = `<span class="tag ${klass.tag}">${klass.label}</span> <span style="margin-left:8px">${klass.msg}</span>`;
-      resultBox.scrollIntoView({behavior:'smooth'});
+        const rcq = c / q;
+        const klass = classify(sexo, rcq);
+        resultBox.classList.remove('hide');
+        ratioLine.textContent = `RCQ: ${fmt(rcq)}`;
+        statusLine.innerHTML = `<span class="tag ${klass.tag}">${klass.label}</span> <span style="margin-left:8px">${klass.msg}</span>`;
+        resultBox.scrollIntoView({behavior:'smooth'});
 
-      // Enviar resultado (RCQ) para Google Sheets – aba "Resultados" (form-urlencoded)
-      try {
+        // Enviar resultado (RCQ) – form-urlencoded
         const lastLead = (Array.isArray(leads) && leads.length) ? leads[leads.length - 1] : {};
         const payloadRes = {
           nome: lastLead?.nome || '',
@@ -312,12 +332,18 @@
           rcq: Number(rcq.toFixed(2)),
           ts: new Date().toISOString()
         };
-        const sent2 = await postWebhook(payloadRes);
-        showToast(sent2.ok ? 'Resultado enviado ao Google Sheets!' : 'Resultado salvo localmente (falha no envio)');
-      } catch(e) {
-        console.warn('Falha ao enviar resultado RCQ:', e);
-        showToast('Resultado salvo localmente (falha no envio)');
+        postWebhook(payloadRes).then(r=>log('resultado sent', r));
+        showToast('Resultado calculado! (enviando ao Sheets)');
+      }catch(err){
+        console.error(err);
+        showToast('Falha no cálculo');
       }
+    });
+
+    // Captura erros JS de runtime para facilitar suporte
+    window.addEventListener('error', (ev)=>{
+      console.error('JS Error', ev.message);
+      showToast('Erro no site (veja console)');
     });
   </script>
 
