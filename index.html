@@ -174,9 +174,9 @@
     //  Para enviar os leads para um endpoint (Formspree/Getform/Apps Script),
     //  defina a URL abaixo. Mantendo vazio, nada será enviado para a rede.
     //
-    //  Ex.: const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyfwNr1PwFx2eg-olPAD9NBa7HlqcC__mccYvqofus/dev";
+    //  Ex.: const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwiDwnlSmMtSa0I_MdPmaA9vFBIStXw5jcPTTZesDmlZSWqA2KgYziBQYhjmrVoFEfz/exec"; // conectado ao Apps Script (produção /exec)
     // =============================
-    const WEBHOOK_URL = ""; // ← cole aqui seu endpoint (opcional)
+    const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwiDwnlSmMtSa0I_MdPmaA9vFBIStXw5jcPTTZesDmlZSWqA2KgYziBQYhjmrVoFEfz/exec"; // ← cole aqui seu endpoint (opcional)
 
     // Banco local simples (LocalStorage) + export CSV
     const STORE_KEY = "mm_whr_leads_v1";
@@ -291,6 +291,27 @@
       ratioLine.textContent = `RCQ: ${fmt(rcq)}`;
       statusLine.innerHTML = `<span class="tag ${klass.tag}">${klass.label}</span> <span style="margin-left:8px">${klass.msg}</span>`;
       resultBox.scrollIntoView({behavior:'smooth'});
+      
+      // ===== Enviar resultado (RCQ) para Google Sheets – aba "Resultados" =====
+      try {
+        const lastLead = (Array.isArray(leads) && leads.length) ? leads[leads.length - 1] : {};
+        const payloadRes = {
+          nome: lastLead?.nome || '',
+          email: lastLead?.email || '',
+          sexo: sexo,
+          cintura: c,
+          quadril: q,
+          rcq: Number(rcq.toFixed(2)),
+          ts: new Date().toISOString()
+        };
+        if (WEBHOOK_URL) {
+          fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payloadRes)
+          }).catch(()=>{ /* silencioso */ });
+        }
+      } catch(e) { console.warn('Falha ao enviar resultado RCQ:', e); }
 
       // (OPCIONAL ATIVADO) Enviar resultado para o Sheets (aba "Resultados")
       try {
