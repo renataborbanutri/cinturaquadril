@@ -43,8 +43,6 @@
     .footer{margin:28px 0 8px;text-align:center;color:var(--ink-300);font-size:12px}
     .toast{position:fixed;right:16px;bottom:16px;background:#111827;color:#fff;padding:12px 14px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;transform:translateY(6px)}
     .toast.show{opacity:1;pointer-events:auto;transform:translateY(0)}
-    .debug{margin-top:8px;font-size:12px;color:var(--ink-900);background:#fffbe6;border:1px solid #fde68a;padding:8px;border-radius:8px}
-    .debug pre{white-space:pre-wrap;word-break:break-word;margin:0}
   </style>
 </head>
 <body>
@@ -57,14 +55,13 @@
           <span class="pill">⚖️ RCQ – Cintura/Quadril</span>
           <span class="pill">📲 Mobile-friendly</span>
           <span class="pill">🗂️ Exporta CSV</span>
-          <button id="btnPing" class="btn secondary" type="button" title="Testar conexão com o Sheets">🔌 Testar conexão</button>
+          <a class="btn secondary" href="https://script.google.com/macros/s/AKfycbym4vgfn6HGvTmgOZ27OlWZe-z2ucZfOIkwolB85XAaVqccxk9YyxBkMwQmcohzIGPd/exec" target="_blank" rel="noopener">🔌 Testar conexão</a>
         </div>
-        <div id="pingBox" class="debug hide"><strong>Ping:</strong> <pre id="pingOut"></pre></div>
       </div>
 
       <div class="card">
         <h2 style="margin:0 0 10px">1) Seus dados</h2>
-        <form id="leadForm" autocomplete="on">
+        <form id="leadForm" autocomplete="on" novalidate>
           <div class="row row-2">
             <div>
               <label for="nome">Nome*</label>
@@ -99,7 +96,7 @@
             <input id="consent" type="checkbox" required />
             <label for="consent" class="muted">Concordo em receber conteúdos e comunicações sobre saúde, nutrição e o programa +Maravilhosa. Posso cancelar a qualquer momento.</label>
           </div>
-          <button type="submit" class="btn">Liberar teste</button>
+          <button id="btnLiberar" type="submit" class="btn">Liberar teste</button>
           <div class="muted" style="margin-top:8px">Seus dados são protegidos (LGPD). Usamos apenas para contato e entrega do seu resultado.</div>
         </form>
 
@@ -108,12 +105,6 @@
           <button class="btn secondary" id="dlCsv" style="margin-left:8px">Exportar CSV</button>
           <button class="btn secondary" id="copyCsv" style="margin-left:8px">Copiar CSV</button>
         </div>
-
-        <div class="hr"></div>
-        <details>
-          <summary class="muted">Como medimos a efetividade</summary>
-          <p class="muted">As submissões ficam salvas localmente e você pode exportar um <em>CSV</em>. Também enviamos para o seu Google Sheets via Apps Script (já conectado).</p>
-        </details>
       </div>
     </section>
 
@@ -123,7 +114,7 @@
         Meça a <strong>cintura</strong> (parte mais fina do tronco; na dúvida, ponto médio entre a última costela e o osso do quadril) e o <strong>quadril</strong> (parte mais larga dos glúteos).
         Mantenha os pés na largura dos ombros, não prenda a respiração e não aperte a fita.
       </p>
-      <form id="whrForm">
+      <form id="whrForm" novalidate>
         <div class="row row-2">
           <div>
             <label for="sexo">Sexo</label>
@@ -175,119 +166,137 @@
   <div id="toast" class="toast" role="status" aria-live="polite">Status</div>
 
   <script>
-    const DEBUG = true;
     // 🔗 Webhook do seu Apps Script (produção /exec)
     const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbym4vgfn6HGvTmgOZ27OlWZe-z2ucZfOIkwolB85XAaVqccxk9YyxBkMwQmcohzIGPd/exec";
 
-    // Banco local simples (LocalStorage) + export CSV
-    const STORE_KEY = "mm_whr_leads_v1";
-    const leads = JSON.parse(localStorage.getItem(STORE_KEY) || "[]");
-    function saveLeads(){ localStorage.setItem(STORE_KEY, JSON.stringify(leads)); }
-
-    function toCsv(rows){
-      const header = Object.keys(rows[0] || {nome:"", email:"", whats:"", idade:"", cidade:"", sexo:"", ts:""});
-      const escape = v => (""+v).replaceAll('"','""');
-      const lines = [header.join(",")].concat(rows.map(r => header.map(k => `"${escape(r[k] ?? "")}"`).join(",")));
-      return lines.join("
-");
-    }
-    function download(filename, text){
-      const blob = new Blob([text], {type:"text/csv;charset=utf-8;"});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url; a.download = filename; a.click();
-      URL.revokeObjectURL(url);
-    }
+    // ===== Helpers UI =====
     function showToast(msg){
       const t = document.getElementById('toast');
       t.textContent = msg || "Ok";
       t.classList.add('show');
-      setTimeout(()=>t.classList.remove('show'), 1600);
+      setTimeout(()=>t.classList.remove('show'), 1800);
     }
 
-    // Debug helpers
-    function log(...args){ if(DEBUG) console.log('[RCQ]', ...args); }
-    function showPing(obj){
-      const box = document.getElementById('pingBox');
-      const out = document.getElementById('pingOut');
-      out.textContent = typeof obj === 'string' ? obj : JSON.stringify(obj, null, 2);
-      box.classList.remove('hide');
+    // ===== Persistência local (evita “zerar” campos) =====
+    const STORE_KEY = "mm_whr_leads_v1";
+    const leadFields = ["nome","email","whats","idade","cidade","sexoLead","consent"];
+    function saveLeadDraft(){
+      const data = {};
+      leadFields.forEach(id=>{
+        const el = document.getElementById(id);
+        if(!el) return;
+        data[id] = el.type === 'checkbox' ? el.checked : el.value;
+      });
+      localStorage.setItem(STORE_KEY+"_draft", JSON.stringify(data));
     }
+    function loadLeadDraft(){
+      const raw = localStorage.getItem(STORE_KEY+"_draft");
+      if(!raw) return;
+      try{
+        const data = JSON.parse(raw);
+        leadFields.forEach(id=>{
+          const el = document.getElementById(id);
+          if(!el || !(id in data)) return;
+          if(el.type === 'checkbox') el.checked = !!data[id];
+          else el.value = data[id] || "";
+        });
+      }catch(_) {}
+    }
+    function clearLeadDraft(){ localStorage.removeItem(STORE_KEY+"_draft"); }
 
-    // Envio ao webhook (form-urlencoded) com fallback
+    // ===== Envio ao webhook (form-urlencoded) =====
     async function postWebhook(doc){
-      if(!WEBHOOK_URL){ return {ok:false, msg:'WEBHOOK_URL vazio'} }
+      if(!WEBHOOK_URL) return {ok:false, msg:'WEBHOOK_URL vazio'};
       try{
         const body = new URLSearchParams();
         Object.entries(doc||{}).forEach(([k,v])=> body.append(k, v==null? '' : String(v)));
         await fetch(WEBHOOK_URL, {
           method:'POST',
           body,
-          mode: 'no-cors',
-          keepalive: true
+          mode:'no-cors',
+          keepalive:true
         });
-        return {ok:true, assumed:true};
+        return {ok:true};
       }catch(err){
         console.warn('Falha no webhook:', err);
-        return {ok:false, error: String(err)}
+        return {ok:false, error:String(err)};
       }
     }
 
-    // Ping button
-    document.getElementById('btnPing').addEventListener('click', async ()=>{
-      try{
-        const res = await fetch(WEBHOOK_URL, { method:'GET' });
-        const txt = await res.text();
-        showPing(txt);
-      }catch(e){ showPing('Erro ao contatar webhook'); }
-    });
-
-    // Lead form
+    // ===== Lead form =====
     const leadForm = document.getElementById('leadForm');
     const afterLead = document.getElementById('afterLead');
     const testCard = document.getElementById('testCard');
 
+    // Auto-save conforme digita
+    leadForm.addEventListener('input', saveLeadDraft);
+    // Repõe dados salvos
+    loadLeadDraft();
+
     leadForm.addEventListener('submit', async (e)=>{
       e.preventDefault();
-      try{
-        const fd = new FormData(leadForm);
-        const payload = Object.fromEntries(fd.entries());
-        const doc = {
-          nome: (payload.nome||'').trim(),
-          email: (payload.email||'').trim(),
-          whats: (payload.whats||'').trim(),
-          idade: (payload.idade||'').trim(),
-          cidade: (payload.cidade||'').trim(),
-          sexo: payload.sexoLead || '',
-          ts: new Date().toISOString()
-        };
-        // Guarda local
-        leads.push(doc); saveLeads();
-        // Envia (não bloqueia UI se falhar)
-        postWebhook(doc).then(r=>log('lead sent', r));
-      }catch(err){ log('lead err', err); }
-      // Sempre liberar o teste
+
+      // Validação mínima manual
+      const nome = document.getElementById('nome').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const sexoLead = document.getElementById('sexoLead').value;
+      const consent = document.getElementById('consent').checked;
+      if(!nome || !email || !sexoLead || !consent){
+        showToast('Preencha nome, e-mail, sexo e aceite o consentimento.');
+        return;
+      }
+
+      // Monta objeto e salva localmente
+      const doc = {
+        nome,
+        email,
+        whats: document.getElementById('whats').value.trim(),
+        idade: document.getElementById('idade').value.trim(),
+        cidade: document.getElementById('cidade').value.trim(),
+        sexo: sexoLead,
+        ts: new Date().toISOString()
+      };
+
+      // UI: libera o teste imediatamente (sem esperar rede)
       afterLead.classList.remove('hide');
       testCard.classList.remove('hide');
-      const sexoSel = document.getElementById('sexo');
-      const sexoLead = document.getElementById('sexoLead').value;
-      if(sexoSel && sexoLead) sexoSel.value = sexoLead;
+      document.getElementById('sexo').value = sexoLead;
       testCard.scrollIntoView({behavior:'smooth'});
-      showToast('Lead salvo! (enviando ao Sheets)');
+      showToast('Teste liberado!');
+
+      // Envia ao Sheets (assíncrono) + limpa rascunho
+      postWebhook(doc);
+      clearLeadDraft();
     });
 
-    // Exportações
+    // Exportações (CSV local)
+    function toCsv(rows){
+      const header = Object.keys(rows[0] || {nome:"", email:"", whats:"", idade:"", cidade:"", sexo:"", ts:""});
+      const escape = v => (""+v).replaceAll('"','""');
+      const lines = [header.join(",")].concat(rows.map(r => header.map(k => `"${escape(r[k] ?? "")}"`).join(",")));
+      return lines.join("\n");
+    }
     document.getElementById('dlCsv').addEventListener('click', ()=>{
+      const raw = localStorage.getItem(STORE_KEY);
+      const leads = raw ? JSON.parse(raw) : [];
       if(!leads.length){ showToast('Sem dados para exportar.'); return; }
-      download('leads_teste_cintura_quadril.csv', toCsv(leads));
+      const blob = new Blob([toCsv(leads)], {type:"text/csv;charset=utf-8;"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = 'leads_teste_cintura_quadril.csv'; a.click();
+      URL.revokeObjectURL(url);
     });
     document.getElementById('copyCsv').addEventListener('click', async ()=>{
+      const raw = localStorage.getItem(STORE_KEY);
+      const leads = raw ? JSON.parse(raw) : [];
       if(!leads.length){ showToast('Sem dados para copiar.'); return; }
-      try{ await navigator.clipboard.writeText(toCsv(leads)); showToast('CSV copiado!'); }
-      catch{ showToast('Não foi possível copiar.'); }
+      try{
+        await navigator.clipboard.writeText(toCsv(leads));
+        showToast('CSV copiado!');
+      }catch{ showToast('Não foi possível copiar.'); }
     });
 
-    // Cálculo WHR (RCQ)
+    // ===== Teste RCQ =====
     const whrForm = document.getElementById('whrForm');
     const resultBox = document.getElementById('result');
     const ratioLine = document.getElementById('ratioLine');
@@ -296,66 +305,48 @@
     function fmt(x){ return (Math.round(Number(x)*100)/100).toFixed(2); }
     function classify(sexo, rcq){
       if(sexo === 'F'){
-        return rcq < 0.80 ? {tag:'ok', label:'Ideal', msg:'Parabéns! Sua relação cintura/quadril está em faixa ideal (mulheres < 0,80). Continue com alimentação rica em proteínas e fibras.'}
-                          : {tag:'bad', label:'Atenção', msg:'Sua relação cintura/quadril está acima do ideal (mulheres ≥ 0,80). Sinal de maior risco cardiometabólico.'};
+        return rcq < 0.80 ? {tag:'ok', label:'Ideal', msg:'Parabéns! Sua relação cintura/quadril está em faixa ideal (mulheres < 0,80).'}
+                          : {tag:'bad', label:'Atenção', msg:'Sua relação cintura/quadril está acima do ideal (mulheres ≥ 0,80).'};
       } else if(sexo === 'M'){
         return rcq < 0.95 ? {tag:'ok', label:'Ideal', msg:'Ótimo! Sua relação cintura/quadril está em faixa ideal (homens < 0,95).'}
-                          : {tag:'bad', label:'Atenção', msg:'Sua relação cintura/quadril está acima do ideal (homens ≥ 0,95). Reveja alimentação, treino e sono.'};
+                          : {tag:'bad', label:'Atenção', msg:'Sua relação cintura/quadril está acima do ideal (homens ≥ 0,95).'};
       }
       return {tag:'warn', label:'Preencha o sexo', msg:'Selecione seu sexo para interpretar corretamente.'}
     }
 
     whrForm.addEventListener('submit', async (e)=>{
       e.preventDefault();
-      try{
-        const fd = new FormData(whrForm);
-        const sexo = fd.get('sexo');
-        const c = parseFloat(fd.get('cintura'));
-        const q = parseFloat(fd.get('quadril'));
-        if(!sexo || !c || !q || q <= 0){ showToast('Preencha todos os campos do teste'); return; }
 
-        const rcq = c / q;
-        const klass = classify(sexo, rcq);
-        resultBox.classList.remove('hide');
-        ratioLine.textContent = `RCQ: ${fmt(rcq)}`;
-        statusLine.innerHTML = `<span class="tag ${klass.tag}">${klass.label}</span> <span style="margin-left:8px">${klass.msg}</span>`;
-        resultBox.scrollIntoView({behavior:'smooth'});
+      const sexo = document.getElementById('sexo').value;
+      const c = parseFloat(document.getElementById('cintura').value);
+      const q = parseFloat(document.getElementById('quadril').value);
+      if(!sexo || !c || !q || q<=0){ showToast('Preencha sexo, cintura e quadril.'); return; }
 
-        // Enviar resultado (RCQ) – form-urlencoded
-        const lastLead = (Array.isArray(leads) && leads.length) ? leads[leads.length - 1] : {};
-        const payloadRes = {
-          nome: lastLead?.nome || '',
-          email: lastLead?.email || '',
-          sexo: sexo,
-          cintura: c,
-          quadril: q,
-          rcq: Number(rcq.toFixed(2)),
-          ts: new Date().toISOString()
-        };
-        postWebhook(payloadRes).then(r=>log('resultado sent', r));
-        showToast('Resultado calculado! (enviando ao Sheets)');
-      }catch(err){
-        console.error(err);
-        showToast('Falha no cálculo');
-      }
+      const rcq = c / q;
+      const klass = classify(sexo, rcq);
+      resultBox.classList.remove('hide');
+      ratioLine.textContent = `RCQ: ${fmt(rcq)}`;
+      statusLine.innerHTML = `<span class="tag ${klass.tag}">${klass.label}</span> <span style="margin-left:8px">${klass.msg}</span>`;
+      resultBox.scrollIntoView({behavior:'smooth'});
+      showToast('Resultado calculado!');
+
+      // Envia resultado ao Sheets (assíncrono)
+      const draftRaw = localStorage.getItem(STORE_KEY+"_draft");
+      const draft = draftRaw ? JSON.parse(draftRaw) : {};
+      const payloadRes = {
+        nome: (draft.nome || '').trim(),
+        email: (draft.email || '').trim(),
+        sexo,
+        cintura: c,
+        quadril: q,
+        rcq: Number(rcq.toFixed(2)),
+        ts: new Date().toISOString()
+      };
+      postWebhook(payloadRes);
     });
 
-    // Captura erros JS de runtime para facilitar suporte
-    window.addEventListener('error', (ev)=>{
-      console.error('JS Error', ev.message);
-      showToast('Erro no site (veja console)');
-    });
+    // Evita que algum erro silencioso quebre a UI
+    window.addEventListener('error', ()=> showToast('Ops! Houve um erro no site.'));
   </script>
-
-  <!--
-  =============================
-  📦 Publicar no GitHub Pages
-  1) Crie um repositório (ex.: cintura-quadril).
-  2) Salve este arquivo como index.html na raiz do repo.
-  3) Em Settings → Pages → Branch: main (ou master) / root. Pronto.
-  4) Para trocar o destino do webhook, edite WEBHOOK_URL no <script>.
-  Segurança e LGPD: este HTML só envia dados ao seu endpoint configurado.
-  =============================
-  -->
 </body>
 </html>
