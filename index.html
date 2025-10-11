@@ -5,6 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Teste Cintura/Quadril – +Maravilhosa</title>
   <meta name="description" content="Descubra seu risco metabólico em 2 minutos com o teste de relação cintura/quadril."/>
+  
+  <!-- Meta Pixel com eventID para deduplicação -->
+  <script>
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  /* 1) Seu Pixel ID */
+  fbq('init', '595481199331116');
+  /* 2) Gera um ID único por carregamento de página */
+  (function(){
+    function uuidv4(){
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){
+        var r=Math.random()*16|0, v=c==='x'?r:(r&0x3|0x8);
+        return v.toString(16);
+      });
+    }
+    window.metaEventId = uuidv4();
+  })();
+  /* 3) Envia PageView com eventID */
+  fbq('track', 'PageView', {}, { eventID: window.metaEventId });
+  </script>
+  <noscript>
+    <img alt="fb pixel" height="1" width="1" style="display:none"
+         src="https://www.facebook.com/tr?id=595481199331116&ev=PageView&noscript=1"/>
+  </noscript>
+  <!-- /Meta Pixel -->
+  
   <style>
     :root{
       --rose-50:#fff7f9; --rose-100:#ffe9f0; --rose-200:#ffd3df; --rose-300:#ffb1c5; 
