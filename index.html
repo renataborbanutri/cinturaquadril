@@ -4,176 +4,400 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Teste Cintura/Quadril – +Maravilhosa</title>
-  <meta name="description" content="Faça o teste de relação cintura/quadril, descubra seu risco metabólico e receba conteúdos personalizados."/>
+  <meta name="description" content="Descubra seu risco metabólico em 2 minutos com o teste de relação cintura/quadril."/>
   <style>
     :root{
-      --rose-50:#fff7f9; --rose-100:#ffe9f0; --rose-200:#ffd3df; --rose-300:#ffb1c5; --rose-400:#ff8fb0; --rose-500:#ff6b97;
-      --ink-900:#111827; --ink-700:#2b2e38; --ink-500:#4b4f5c; --ink-300:#7a7f91; --ok:#10b981; --warn:#f59e0b; --bad:#ef4444;
-      --card-shadow:0 10px 25px rgba(43,46,56,.08);
+      --rose-50:#fff7f9; --rose-100:#ffe9f0; --rose-200:#ffd3df; --rose-300:#ffb1c5; 
+      --rose-400:#ff8fb0; --rose-500:#ff6b97; --rose-600:#e85580;
+      --ink-900:#111827; --ink-700:#2b2e38; --ink-500:#4b4f5c; --ink-300:#7a7f91; 
+      --ok:#10b981; --warn:#f59e0b; --bad:#ef4444;
+      --card-shadow:0 4px 12px rgba(0,0,0,.08);
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink-700);background:linear-gradient(160deg,var(--rose-50),#fff)}
-    .wrap{max-width:980px;margin:auto;padding:24px}
-    .hero{background:linear-gradient(135deg,var(--rose-100),#e8e7ff);border:2px solid var(--rose-200);border-radius:24px;padding:28px;box-shadow:var(--card-shadow)}
-    h1{margin:0 0 8px;font-size:clamp(24px,3vw,36px)}
-    p.lead{margin:0;font-size:clamp(14px,2.4vw,18px);color:var(--ink-500)}
-    .grid{display:grid;gap:18px}
-    @media (min-width:880px){ .grid-2{grid-template-columns:1fr 1fr} }
-    .card{background:#fff;border:1px solid #f3f3f7;border-radius:20px;padding:20px;box-shadow:var(--card-shadow)}
-    label{display:block;font-weight:600;margin:10px 0 6px}
-    input,select,button{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #e7e7ef;font-size:16px}
-    input:focus,select:focus{outline:3px solid var(--rose-200);border-color:var(--rose-400)}
-    .row{display:grid;grid-template-columns:1fr;gap:12px}
-    @media(min-width:680px){.row-2{grid-template-columns:1fr 1fr}}
-    .btn{background:var(--rose-500);color:#fff;font-weight:700;border:none;cursor:pointer;transition:.2s}
-    .btn:hover{filter:brightness(.95);transform:translateY(-1px)}
-    .btn.secondary{background:#fff;color:var(--ink-700);border:1px solid #e7e7ef}
-    .muted{font-size:13px;color:var(--ink-300)}
-    .hide{display:none}
-    .pill{display:inline-flex;gap:8px;align-items:center;background:#fff;border:1px solid #f0e0ea;padding:8px 12px;border-radius:999px}
-    .tag{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;
+      color:var(--ink-700);
+      background:linear-gradient(160deg,var(--rose-50) 0%,#fff 50%);
+      min-height:100vh;
+      padding-bottom:40px;
+    }
+    .wrap{max-width:640px;margin:0 auto;padding:16px}
+    
+    /* Hero compacto mobile */
+    .hero{
+      background:linear-gradient(135deg,var(--rose-500),var(--rose-600));
+      border-radius:20px;
+      padding:24px 20px;
+      color:#fff;
+      text-align:center;
+      box-shadow:0 8px 24px rgba(255,107,151,.25);
+      margin-bottom:20px;
+    }
+    h1{
+      margin:0 0 10px;
+      font-size:26px;
+      font-weight:800;
+      line-height:1.2;
+    }
+    .hero p{
+      margin:0;
+      font-size:15px;
+      line-height:1.5;
+      opacity:.95;
+    }
+    .hero-icon{
+      font-size:48px;
+      margin-bottom:12px;
+      display:block;
+    }
+    
+    /* Cards */
+    .card{
+      background:#fff;
+      border-radius:16px;
+      padding:20px;
+      box-shadow:var(--card-shadow);
+      margin-bottom:16px;
+    }
+    .card h2{
+      margin:0 0 16px;
+      font-size:20px;
+      font-weight:700;
+      color:var(--ink-900);
+    }
+    .card h3{
+      margin:0 0 12px;
+      font-size:18px;
+      font-weight:700;
+      color:var(--ink-900);
+    }
+    
+    /* Forms mobile-first */
+    label{
+      display:block;
+      font-weight:600;
+      margin:0 0 6px;
+      font-size:14px;
+      color:var(--ink-700);
+    }
+    input,select,button{
+      width:100%;
+      padding:14px 16px;
+      border-radius:12px;
+      border:2px solid #e7e7ef;
+      font-size:16px;
+      font-family:inherit;
+      transition:all .2s;
+    }
+    input:focus,select:focus{
+      outline:none;
+      border-color:var(--rose-400);
+      box-shadow:0 0 0 3px rgba(255,107,151,.1);
+    }
+    .field{margin-bottom:16px}
+    .row{display:flex;gap:12px;margin-bottom:16px}
+    .row .field{flex:1;margin-bottom:0}
+    
+    /* Botões otimizados para toque */
+    .btn{
+      background:var(--rose-500);
+      color:#fff;
+      font-weight:700;
+      border:none;
+      cursor:pointer;
+      transition:.2s;
+      font-size:17px;
+      padding:16px;
+      border-radius:12px;
+      box-shadow:0 4px 12px rgba(255,107,151,.3);
+      -webkit-tap-highlight-color:transparent;
+    }
+    .btn:active{
+      transform:scale(.98);
+      box-shadow:0 2px 8px rgba(255,107,151,.3);
+    }
+    
+    /* Checkbox mobile */
+    .checkbox{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      margin:16px 0;
+      padding:12px;
+      background:var(--rose-50);
+      border-radius:12px;
+    }
+    .checkbox input{
+      width:20px;
+      height:20px;
+      margin-top:2px;
+      flex-shrink:0;
+    }
+    .checkbox label{
+      margin:0;
+      font-size:13px;
+      font-weight:500;
+      line-height:1.4;
+    }
+    
+    /* Tags e status */
+    .tag{
+      display:inline-block;
+      padding:6px 12px;
+      border-radius:20px;
+      font-size:13px;
+      font-weight:700;
+    }
     .tag.ok{background:#ecfdf5;color:var(--ok)}
     .tag.warn{background:#fffbeb;color:var(--warn)}
     .tag.bad{background:#fef2f2;color:var(--bad)}
-    .result-box{border-radius:16px;padding:16px;border:1px dashed #ececf4;background:#fcfcff}
-    .tips{font-size:14px;color:var(--ink-500)}
-    .hr{height:1px;background:linear-gradient(90deg,transparent,#eee,transparent);margin:18px 0}
-    .checkbox{display:flex;gap:10px;align-items:flex-start}
-    .checkbox input{width:auto;margin-top:3px}
-    .footer{margin:28px 0 8px;text-align:center;color:var(--ink-300);font-size:12px}
-    .toast{position:fixed;right:16px;bottom:16px;background:#111827;color:#fff;padding:12px 14px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;transform:translateY(6px)}
-    .toast.show{opacity:1;pointer-events:auto;transform:translateY(0)}
+    
+    /* Resultado */
+    .result-box{
+      background:linear-gradient(135deg,#f9fafb,#fff);
+      border:2px dashed var(--rose-200);
+      border-radius:16px;
+      padding:20px;
+      margin-top:20px;
+    }
+    .ratio-display{
+      font-size:42px;
+      font-weight:900;
+      color:var(--rose-500);
+      text-align:center;
+      margin-bottom:12px;
+      line-height:1;
+    }
+    .status-msg{
+      text-align:center;
+      margin-bottom:16px;
+    }
+    
+    /* Lista de dicas */
+    .tips{
+      background:var(--rose-50);
+      border-radius:12px;
+      padding:16px;
+      margin:16px 0 0;
+    }
+    .tips li{
+      font-size:14px;
+      line-height:1.6;
+      margin-bottom:8px;
+      color:var(--ink-500);
+    }
+    .tips li:last-child{margin-bottom:0}
+    
+    /* Instruções visuais */
+    .instruction-box{
+      background:#f9fafb;
+      border-left:4px solid var(--rose-400);
+      padding:16px;
+      border-radius:8px;
+      margin:16px 0;
+    }
+    .instruction-box p{
+      margin:0;
+      font-size:14px;
+      line-height:1.6;
+      color:var(--ink-500);
+    }
+    .instruction-box strong{color:var(--ink-700)}
+    
+    /* Toast mobile */
+    .toast{
+      position:fixed;
+      bottom:20px;
+      left:50%;
+      transform:translateX(-50%) translateY(100px);
+      background:var(--ink-900);
+      color:#fff;
+      padding:14px 20px;
+      border-radius:12px;
+      opacity:0;
+      pointer-events:none;
+      transition:all .3s cubic-bezier(.4,0,.2,1);
+      font-size:15px;
+      font-weight:600;
+      box-shadow:0 8px 24px rgba(0,0,0,.3);
+      z-index:1000;
+      max-width:calc(100% - 32px);
+    }
+    .toast.show{
+      opacity:1;
+      pointer-events:auto;
+      transform:translateX(-50%) translateY(0);
+    }
+    
+    /* Utilitários */
+    .hide{display:none}
+    .muted{color:var(--ink-300);font-size:13px;line-height:1.4}
+    .footer{
+      text-align:center;
+      color:var(--ink-300);
+      font-size:12px;
+      margin-top:32px;
+      padding:16px;
+    }
+    
+    /* Media query para telas maiores */
+    @media (min-width:640px){
+      .wrap{padding:24px}
+      h1{font-size:32px}
+      .hero{padding:32px}
+      .card{padding:28px}
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <section class="hero grid grid-2" aria-labelledby="title">
-      <div>
-        <h1 id="title">Teste Cintura/Quadril (+Maravilhosa)</h1>
-        <p class="lead">Descubra como está o seu <strong>risco de doenças cardíacas, AVC e gordura no fígado</strong> com um teste simples que você pode fazer em casa. Preencha seus dados para liberar o teste e receber orientações personalizadas.</p>
-        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
-        </div>
-      </div>
-
-      <div class="card">
-        <h2 style="margin:0 0 10px">1) Seus dados</h2>
-        <form id="leadForm" autocomplete="on" novalidate>
-          <div class="row row-2">
-            <div>
-              <label for="nome">Nome*</label>
-              <input id="nome" name="nome" required placeholder="Seu nome" />
-            </div>
-            <div>
-              <label for="email">Email*</label>
-              <input id="email" name="email" type="email" required placeholder="voce@email.com" />
-            </div>
-            <div>
-              <label for="whats">WhatsApp</label>
-              <input id="whats" name="whats" inputmode="tel" placeholder="" />
-            </div>
-            <div>
-              <label for="idade">Idade</label>
-              <input id="idade" name="idade" type="number" min="10" max="100" placeholder="Ex.: 45" />
-            </div>
-            <div>
-              <label for="cidade">Cidade</label>
-              <input id="cidade" name="cidade" placeholder="Cidade/Estado ou País" />
-            </div>
-            <div>
-              <label for="sexoLead">Sexo*</label>
-              <select id="sexoLead" name="sexoLead" required>
-                <option value="">Selecione…</option>
-                <option value="F">Mulher</option>
-                <option value="M">Homem</option>
-              </select>
-            </div>
-          </div>
-          <div class="checkbox" style="margin:10px 0 8px">
-            <input id="consent" type="checkbox" required />
-            <label for="consent" class="muted">Concordo em receber conteúdos e comunicações sobre saúde, nutrição e o programa +Maravilhosa. Posso cancelar a qualquer momento.</label>
-          </div>
-          <button id="btnLiberar" type="submit" class="btn">Liberar teste</button>
-          <div class="muted" style="margin-top:8px">Seus dados são protegidos (LGPD). Usamos apenas para contato e entrega do seu resultado.</div>
-        </form>
-
-        <div id="afterLead" class="hide" aria-live="polite" style="margin-top:14px">
-          <span class="tag ok">✔️ Dados recebidos</span>
-        </div>
-      </div>
+    <!-- Hero -->
+    <section class="hero">
+      <span class="hero-icon">📏</span>
+      <h1>Teste Cintura/Quadril</h1>
+      <p>Avalie seu risco metabólico em 2 minutos. Descubra se a gordura abdominal está afetando sua saúde.</p>
     </section>
 
-    <section id="testCard" class="card hide" style="margin-top:18px">
-      <h2 style="margin:0 0 6px">2) Faça o teste de Cintura/Quadril</h2>
-      <p class="muted" style="margin:0 0 12px">
-        Meça a <strong>cintura</strong> (parte mais fina do tronco; na dúvida, ponto médio entre a última costela e o osso do quadril) e o <strong>quadril</strong> (parte mais larga dos glúteos).
-        Mantenha os pés na largura dos ombros, não prenda a respiração e não aperte a fita.
-      </p>
-      <form id="whrForm" novalidate>
-        <div class="row row-2">
-          <div>
-            <label for="sexo">Sexo</label>
-            <select id="sexo" name="sexo" required>
-              <option value="">Selecione…</option>
-              <option value="F">Mulher</option>
-              <option value="M">Homem</option>
+    <!-- Formulário de Dados -->
+    <div class="card">
+      <h2>📋 Passo 1: Seus Dados</h2>
+      <form id="leadForm" autocomplete="on" novalidate>
+        <div class="field">
+          <label for="nome">Nome completo*</label>
+          <input id="nome" name="nome" required placeholder="Maria Silva" />
+        </div>
+
+        <div class="field">
+          <label for="email">Seu melhor e-mail*</label>
+          <input id="email" name="email" type="email" required placeholder="maria@email.com" />
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="idade">Idade</label>
+            <input id="idade" name="idade" type="number" min="10" max="100" placeholder="Ex: 35" />
+          </div>
+          <div class="field">
+            <label for="sexoLead">Sexo*</label>
+            <select id="sexoLead" name="sexoLead" required>
+              <option value="">Selecione</option>
+              <option value="F">Feminino</option>
+              <option value="M">Masculino</option>
             </select>
           </div>
-          <div>
-            <label for="cintura">Cintura (cm)</label>
-            <input id="cintura" name="cintura" type="number" min="30" max="200" step="0.1" placeholder="Ex.: 75.0" required />
-          </div>
-          <div>
-            <label for="quadril">Quadril (cm)</label>
-            <input id="quadril" name="quadril" type="number" min="40" max="250" step="0.1" placeholder="Ex.: 95.0" required />
-          </div>
         </div>
-        <button class="btn" type="submit" style="margin-top:10px">Calcular</button>
+
+        <div class="field">
+          <label for="whats">WhatsApp (opcional)</label>
+          <input id="whats" name="whats" inputmode="tel" placeholder="(11) 99999-9999" />
+        </div>
+
+        <div class="field">
+          <label for="cidade">Cidade/Estado</label>
+          <input id="cidade" name="cidade" placeholder="São Paulo, SP" />
+        </div>
+
+        <div class="checkbox">
+          <input id="consent" type="checkbox" required />
+          <label for="consent">Concordo em receber conteúdos sobre saúde e bem-estar. Posso cancelar a qualquer momento.</label>
+        </div>
+
+        <button type="submit" class="btn">✨ Liberar Teste Agora</button>
+        <p class="muted" style="margin:12px 0 0;text-align:center">🔒 Seus dados estão protegidos pela LGPD</p>
       </form>
 
-      <div id="result" class="result-box hide" style="margin-top:14px">
-        <div id="ratioLine" style="font-size:18px;font-weight:800">RCQ: –</div>
-        <div id="statusLine" style="margin-top:6px"></div>
-        <ul class="tips">
-          <li>Mulher: ideal &lt; <strong>0,80</strong>. Homem: ideal &lt; <strong>0,95</strong>.</li>
-          <li>Resultado alto indica maior risco cardiometabólico mesmo com IMC normal.</li>
-          <li>Repita a medida 2× e use a média para mais precisão.</li>
-        </ul>
+      <div id="afterLead" class="hide" style="margin-top:16px;text-align:center">
+        <span class="tag ok">✅ Dados recebidos com sucesso!</span>
       </div>
-    </section>
+    </div>
 
-    <section class="card" style="margin-top:18px">
-      <h3 style="margin:0 0 8px">Como interpretar</h3>
-      <div class="row row-2">
-        <div>
-          <p><strong>Mulheres:</strong> RCQ &lt; 0,80 → <span class="tag ok">ideal</span>. RCQ ≥ 0,80 → <span class="tag bad">atenção</span>.</p>
-          <p><strong>Homens:</strong> RCQ &lt; 0,95 → <span class="tag ok">ideal</span>. RCQ ≥ 0,95 → <span class="tag bad">atenção</span>.</p>
+    <!-- Card do Teste -->
+    <div id="testCard" class="card hide">
+      <h2>📐 Passo 2: Medições</h2>
+      
+      <div class="instruction-box">
+        <p><strong>Como medir corretamente:</strong></p>
+        <p>🔹 <strong>Cintura:</strong> Parte mais fina do abdômen (geralmente na altura do umbigo)</p>
+        <p>🔹 <strong>Quadril:</strong> Parte mais larga dos glúteos</p>
+        <p style="margin-top:8px;font-size:13px">💡 Use fita métrica, mantenha postura relaxada e não prenda a respiração</p>
+      </div>
+
+      <form id="whrForm" novalidate>
+        <div class="field">
+          <label for="sexo">Confirme seu sexo</label>
+          <select id="sexo" name="sexo" required>
+            <option value="">Selecione</option>
+            <option value="F">Feminino</option>
+            <option value="M">Masculino</option>
+          </select>
         </div>
-        <div>
-          <p class="muted">Mesmo que o peso esteja “ok”, RCQ elevado sugere gordura abdominal. Foque em refeição completa com proteína adequada, fibras em base vegetal e bons hábitos de sono/estresse.</p>
+
+        <div class="row">
+          <div class="field">
+            <label for="cintura">Cintura (cm)</label>
+            <input id="cintura" name="cintura" type="number" min="30" max="200" step="0.1" placeholder="Ex: 75.5" required />
+          </div>
+          <div class="field">
+            <label for="quadril">Quadril (cm)</label>
+            <input id="quadril" name="quadril" type="number" min="40" max="250" step="0.1" placeholder="Ex: 98.0" required />
+          </div>
+        </div>
+
+        <button class="btn" type="submit">🧮 Calcular Meu Resultado</button>
+      </form>
+
+      <!-- Resultado -->
+      <div id="result" class="result-box hide">
+        <div class="ratio-display" id="ratioLine">–</div>
+        <div class="status-msg" id="statusLine"></div>
+        
+        <div class="tips">
+          <li><strong>Mulheres:</strong> Ideal abaixo de 0,80</li>
+          <li><strong>Homens:</strong> Ideal abaixo de 0,95</li>
+          <li>📊 Valores elevados indicam maior risco de doenças cardíacas, diabetes e gordura no fígado</li>
+          <li>💪 Mesmo com peso normal, RCQ alto sugere gordura visceral</li>
         </div>
       </div>
-    </section>
+    </div>
 
-    <div class="footer">© +Maravilhosa</div>
+    <!-- Interpretação -->
+    <div class="card">
+      <h3>🎯 Como Interpretar</h3>
+      <div style="background:var(--rose-50);padding:16px;border-radius:12px;margin-bottom:12px">
+        <p style="margin:0 0 8px;font-weight:600;color:var(--ink-900)">👩 Mulheres</p>
+        <p style="margin:0;font-size:14px"><span class="tag ok">Ideal</span> Menor que 0,80</p>
+        <p style="margin:8px 0 0;font-size:14px"><span class="tag bad">Atenção</span> Maior ou igual a 0,80</p>
+      </div>
+      <div style="background:#f9fafb;padding:16px;border-radius:12px">
+        <p style="margin:0 0 8px;font-weight:600;color:var(--ink-900)">👨 Homens</p>
+        <p style="margin:0;font-size:14px"><span class="tag ok">Ideal</span> Menor que 0,95</p>
+        <p style="margin:8px 0 0;font-size:14px"><span class="tag bad">Atenção</span> Maior ou igual a 0,95</p>
+      </div>
+      <p class="muted" style="margin:16px 0 0">⚠️ RCQ elevado está associado a maior risco de doenças cardiovasculares, diabetes tipo 2, AVC e esteatose hepática (gordura no fígado), mesmo em pessoas com IMC normal.</p>
+    </div>
+
+    <div class="footer">
+      <p style="margin:0">💖 +Maravilhosa</p>
+      <p style="margin:8px 0 0">Cuidando da sua saúde de forma completa</p>
+    </div>
   </div>
 
-  <div id="toast" class="toast" role="status" aria-live="polite">Status</div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script>
-    // 🔗 Webhook do seu Apps Script (produção /exec)
     const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbym4vgfn6HGvTmgOZ27OlWZe-z2ucZfOIkwolB85XAaVqccxk9YyxBkMwQmcohzIGPd/exec";
 
-    // ===== Helpers UI =====
     function showToast(msg){
       const t = document.getElementById('toast');
       t.textContent = msg || "Ok";
       t.classList.add('show');
-      setTimeout(()=>t.classList.remove('show'), 1800);
+      setTimeout(()=>t.classList.remove('show'),2500);
     }
 
-    // ===== Persistência local (evita “zerar” campos) =====
     const STORE_KEY = "mm_whr_leads_v1";
     const leadFields = ["nome","email","whats","idade","cidade","sexoLead","consent"];
+    
     function saveLeadDraft(){
       const data = {};
       leadFields.forEach(id=>{
@@ -181,26 +405,21 @@
         if(!el) return;
         data[id] = el.type === 'checkbox' ? el.checked : el.value;
       });
-      localStorage.setItem(STORE_KEY+"_draft", JSON.stringify(data));
+      window.leadDraft = data;
     }
+    
     function loadLeadDraft(){
-      const raw = localStorage.getItem(STORE_KEY+"_draft");
-      if(!raw) return;
-      try{
-        const data = JSON.parse(raw);
-        leadFields.forEach(id=>{
-          const el = document.getElementById(id);
-          if(!el || !(id in data)) return;
-          if(el.type === 'checkbox') el.checked = !!data[id];
-          else el.value = data[id] || "";
-        });
-      }catch(_) {}
+      if(!window.leadDraft) return;
+      leadFields.forEach(id=>{
+        const el = document.getElementById(id);
+        if(!el || !(id in window.leadDraft)) return;
+        if(el.type === 'checkbox') el.checked = !!window.leadDraft[id];
+        else el.value = window.leadDraft[id] || "";
+      });
     }
-    function clearLeadDraft(){ localStorage.removeItem(STORE_KEY+"_draft"); }
 
-    // ===== Envio ao webhook (form-urlencoded) =====
     async function postWebhook(doc){
-      if(!WEBHOOK_URL) return {ok:false, msg:'WEBHOOK_URL vazio'};
+      if(!WEBHOOK_URL) return {ok:false};
       try{
         const body = new URLSearchParams();
         Object.entries(doc||{}).forEach(([k,v])=> body.append(k, v==null? '' : String(v)));
@@ -212,35 +431,31 @@
         });
         return {ok:true};
       }catch(err){
-        console.warn('Falha no webhook:', err);
-        return {ok:false, error:String(err)};
+        console.warn('Webhook error:', err);
+        return {ok:false};
       }
     }
 
-    // ===== Lead form =====
     const leadForm = document.getElementById('leadForm');
     const afterLead = document.getElementById('afterLead');
     const testCard = document.getElementById('testCard');
 
-    // Auto-save conforme digita
     leadForm.addEventListener('input', saveLeadDraft);
-    // Repõe dados salvos
     loadLeadDraft();
 
     leadForm.addEventListener('submit', async (e)=>{
       e.preventDefault();
 
-      // Validação mínima manual
       const nome = document.getElementById('nome').value.trim();
       const email = document.getElementById('email').value.trim();
       const sexoLead = document.getElementById('sexoLead').value;
       const consent = document.getElementById('consent').checked;
+      
       if(!nome || !email || !sexoLead || !consent){
-        showToast('Preencha nome, e-mail, sexo e aceite o consentimento.');
+        showToast('⚠️ Preencha todos os campos obrigatórios');
         return;
       }
 
-      // Monta objeto e salva localmente
       const doc = {
         nome,
         email,
@@ -251,61 +466,34 @@
         ts: new Date().toISOString()
       };
 
-      // UI: libera o teste imediatamente (sem esperar rede)
       afterLead.classList.remove('hide');
       testCard.classList.remove('hide');
       document.getElementById('sexo').value = sexoLead;
-      testCard.scrollIntoView({behavior:'smooth'});
-      showToast('Teste liberado!');
+      testCard.scrollIntoView({behavior:'smooth',block:'start'});
+      showToast('✅ Teste liberado! Role para baixo');
 
-      // Envia ao Sheets (assíncrono) + limpa rascunho
       postWebhook(doc);
-      clearLeadDraft();
+      window.leadDraft = null;
     });
 
-    // Exportações (CSV local)
-    function toCsv(rows){
-      const header = Object.keys(rows[0] || {nome:"", email:"", whats:"", idade:"", cidade:"", sexo:"", ts:""});
-      const escape = v => (""+v).replaceAll('"','""');
-      const lines = [header.join(",")].concat(rows.map(r => header.map(k => `"${escape(r[k] ?? "")}"`).join(",")));
-      return lines.join("\n");
-    }
-    document.getElementById('dlCsv').addEventListener('click', ()=>{
-      const raw = localStorage.getItem(STORE_KEY);
-      const leads = raw ? JSON.parse(raw) : [];
-      if(!leads.length){ showToast('Sem dados para exportar.'); return; }
-      const blob = new Blob([toCsv(leads)], {type:"text/csv;charset=utf-8;"});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url; a.download = 'leads_teste_cintura_quadril.csv'; a.click();
-      URL.revokeObjectURL(url);
-    });
-    document.getElementById('copyCsv').addEventListener('click', async ()=>{
-      const raw = localStorage.getItem(STORE_KEY);
-      const leads = raw ? JSON.parse(raw) : [];
-      if(!leads.length){ showToast('Sem dados para copiar.'); return; }
-      try{
-        await navigator.clipboard.writeText(toCsv(leads));
-        showToast('CSV copiado!');
-      }catch{ showToast('Não foi possível copiar.'); }
-    });
-
-    // ===== Teste RCQ =====
     const whrForm = document.getElementById('whrForm');
     const resultBox = document.getElementById('result');
     const ratioLine = document.getElementById('ratioLine');
     const statusLine = document.getElementById('statusLine');
 
-    function fmt(x){ return (Math.round(Number(x)*100)/100).toFixed(2); }
+    function fmt(x){ return Number(x).toFixed(2); }
+    
     function classify(sexo, rcq){
       if(sexo === 'F'){
-        return rcq < 0.80 ? {tag:'ok', label:'Ideal', msg:'Parabéns! Sua relação cintura/quadril está em faixa ideal (mulheres < 0,80).'}
-                          : {tag:'bad', label:'Atenção', msg:'Sua relação cintura/quadril está acima do ideal (mulheres ≥ 0,80).'};
+        return rcq < 0.80 
+          ? {tag:'ok', label:'✅ Resultado Ideal', msg:'Parabéns! Sua relação cintura/quadril está na faixa saudável.'}
+          : {tag:'bad', label:'⚠️ Requer Atenção', msg:'Seu resultado indica risco aumentado. Consulte um profissional de saúde.'};
       } else if(sexo === 'M'){
-        return rcq < 0.95 ? {tag:'ok', label:'Ideal', msg:'Ótimo! Sua relação cintura/quadril está em faixa ideal (homens < 0,95).'}
-                          : {tag:'bad', label:'Atenção', msg:'Sua relação cintura/quadril está acima do ideal (homens ≥ 0,95).'};
+        return rcq < 0.95 
+          ? {tag:'ok', label:'✅ Resultado Ideal', msg:'Ótimo! Sua relação cintura/quadril está na faixa saudável.'}
+          : {tag:'bad', label:'⚠️ Requer Atenção', msg:'Seu resultado indica risco aumentado. Consulte um profissional de saúde.'};
       }
-      return {tag:'warn', label:'Preencha o sexo', msg:'Selecione seu sexo para interpretar corretamente.'}
+      return {tag:'warn', label:'Selecione o sexo', msg:''}
     }
 
     whrForm.addEventListener('submit', async (e)=>{
@@ -314,22 +502,24 @@
       const sexo = document.getElementById('sexo').value;
       const c = parseFloat(document.getElementById('cintura').value);
       const q = parseFloat(document.getElementById('quadril').value);
-      if(!sexo || !c || !q || q<=0){ showToast('Preencha sexo, cintura e quadril.'); return; }
+      
+      if(!sexo || !c || !q || q<=0){ 
+        showToast('⚠️ Preencha todos os campos'); 
+        return; 
+      }
 
       const rcq = c / q;
       const klass = classify(sexo, rcq);
+      
       resultBox.classList.remove('hide');
-      ratioLine.textContent = `RCQ: ${fmt(rcq)}`;
-      statusLine.innerHTML = `<span class="tag ${klass.tag}">${klass.label}</span> <span style="margin-left:8px">${klass.msg}</span>`;
-      resultBox.scrollIntoView({behavior:'smooth'});
-      showToast('Resultado calculado!');
+      ratioLine.textContent = fmt(rcq);
+      statusLine.innerHTML = `<span class="tag ${klass.tag}">${klass.label}</span><p style="margin:8px 0 0;font-size:15px">${klass.msg}</p>`;
+      resultBox.scrollIntoView({behavior:'smooth',block:'center'});
+      showToast('✅ Resultado calculado!');
 
-      // Envia resultado ao Sheets (assíncrono)
-      const draftRaw = localStorage.getItem(STORE_KEY+"_draft");
-      const draft = draftRaw ? JSON.parse(draftRaw) : {};
       const payloadRes = {
-        nome: (draft.nome || '').trim(),
-        email: (draft.email || '').trim(),
+        nome: (window.leadDraft?.nome || '').trim(),
+        email: (window.leadDraft?.email || '').trim(),
         sexo,
         cintura: c,
         quadril: q,
@@ -338,9 +528,6 @@
       };
       postWebhook(payloadRes);
     });
-
-    // Evita que algum erro silencioso quebre a UI
-    window.addEventListener('error', ()=> showToast('Ops! Houve um erro no site.'));
   </script>
 </body>
 </html>
