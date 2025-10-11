@@ -108,7 +108,7 @@
         <div class="hr"></div>
         <details>
           <summary class="muted">Como medimos a efetividade</summary>
-          <p class="muted">As submissões ficam salvas localmente e você pode exportar um <em>CSV</em>. Opcionalmente, enviamos para o seu Google Sheets via Apps Script (já conectado).</p>
+          <p class="muted">As submissões ficam salvas localmente e você pode exportar um <em>CSV</em>. Também enviamos para o seu Google Sheets via Apps Script (já conectado).</p>
         </details>
       </div>
     </section>
@@ -116,7 +116,7 @@
     <section id="testCard" class="card hide" style="margin-top:18px">
       <h2 style="margin:0 0 6px">2) Faça o teste de Cintura/Quadril</h2>
       <p class="muted" style="margin:0 0 12px">
-        Meça a <strong>cintura</strong> (parte mais fina do tronco; na dúvida, ponto médio entre a última costela e o osso do quadril) e o <strong>quadril</strong> (parte mais larga dos glúteos). 
+        Meça a <strong>cintura</strong> (parte mais fina do tronco; na dúvida, ponto médio entre a última costela e o osso do quadril) e o <strong>quadril</strong> (parte mais larga dos glúteos).
         Mantenha os pés na largura dos ombros, não prenda a respiração e não aperte a fita.
       </p>
       <form id="whrForm">
@@ -165,9 +165,7 @@
       </div>
     </section>
 
-    <div class="footer">
-      © +Maravilhosa • Pronto para GitHub Pages • LGPD: dados usados apenas para contato e entrega do resultado.
-    </div>
+    <div class="footer">© +Maravilhosa • Pronto para GitHub Pages • LGPD: dados usados apenas para contato e entrega do resultado.</div>
   </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite">Status</div>
@@ -185,7 +183,8 @@
       const header = Object.keys(rows[0] || {nome:"", email:"", whats:"", idade:"", cidade:"", sexo:"", ts:""});
       const escape = v => (""+v).replaceAll('"','""');
       const lines = [header.join(",")].concat(rows.map(r => header.map(k => `"${escape(r[k] ?? "")}"`).join(",")));
-      return lines.join("\n");
+      return lines.join("
+");
     }
     function download(filename, text){
       const blob = new Blob([text], {type:"text/csv;charset=utf-8;"});
@@ -201,23 +200,22 @@
       setTimeout(()=>t.classList.remove('show'), 1600);
     }
 
-    // Envio ao webhook com fallback
+    // Envio ao webhook (form-urlencoded) com fallback
     async function postWebhook(doc){
       if(!WEBHOOK_URL){ return {ok:false, msg:'WEBHOOK_URL vazio'} }
       try{
-        // no-cors para evitar bloqueio de CORS do Google; keepalive para navegação/fechamento
+        const body = new URLSearchParams();
+        Object.entries(doc||{}).forEach(([k,v])=> body.append(k, v==null? '' : String(v)));
         await fetch(WEBHOOK_URL, {
           method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body: JSON.stringify(doc),
+          body,
           mode: 'no-cors',
           keepalive: true
         });
-        // Em no-cors não conseguimos ler status; assumimos ok.
         return {ok:true, assumed:true};
       }catch(err){
         console.warn('Falha no webhook:', err);
-        return {ok:false, error: String(err)};
+        return {ok:false, error: String(err)}
       }
     }
 
@@ -243,7 +241,7 @@
       // Guarda local
       leads.push(doc); saveLeads();
 
-      // Envia ao Sheets
+      // Envia para webhook (form-urlencoded)
       const sent = await postWebhook(doc);
 
       // Feedback + liberar teste
@@ -252,8 +250,7 @@
       document.getElementById('sexo').value = payload.sexoLead || "";
       testCard.scrollIntoView({behavior:'smooth'});
 
-      if(sent.ok){ showToast('Lead enviado ao Google Sheets!'); }
-      else { showToast('Lead salvo localmente (falha no envio)'); }
+      showToast(sent.ok ? 'Lead enviado ao Google Sheets!' : 'Lead salvo localmente (falha no envio)');
     });
 
     // Exportações
@@ -303,7 +300,7 @@
       statusLine.innerHTML = `<span class="tag ${klass.tag}">${klass.label}</span> <span style="margin-left:8px">${klass.msg}</span>`;
       resultBox.scrollIntoView({behavior:'smooth'});
 
-      // Enviar resultado (RCQ) para Google Sheets – aba "Resultados"
+      // Enviar resultado (RCQ) para Google Sheets – aba "Resultados" (form-urlencoded)
       try {
         const lastLead = (Array.isArray(leads) && leads.length) ? leads[leads.length - 1] : {};
         const payloadRes = {
@@ -315,16 +312,8 @@
           rcq: Number(rcq.toFixed(2)),
           ts: new Date().toISOString()
         };
-        if (WEBHOOK_URL) {
-          await fetch(WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payloadRes),
-            mode: 'no-cors',
-            keepalive: true
-          });
-          showToast('Resultado enviado ao Google Sheets!');
-        }
+        const sent2 = await postWebhook(payloadRes);
+        showToast(sent2.ok ? 'Resultado enviado ao Google Sheets!' : 'Resultado salvo localmente (falha no envio)');
       } catch(e) {
         console.warn('Falha ao enviar resultado RCQ:', e);
         showToast('Resultado salvo localmente (falha no envio)');
