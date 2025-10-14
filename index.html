@@ -12,9 +12,7 @@
   n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
   n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
   t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-  /* 1) Seu Pixel ID */
   fbq('init', '595481199331116');
-  /* 2) Gera um ID único por carregamento de página */
   (function(){
     function uuidv4(){
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){
@@ -24,7 +22,6 @@
     }
     window.metaEventId = uuidv4();
   })();
-  /* 3) Envia PageView com eventID */
   fbq('track', 'PageView', {}, { eventID: window.metaEventId });
   </script>
   <noscript>
@@ -52,7 +49,6 @@
     }
     .wrap{max-width:640px;margin:0 auto;padding:16px}
 
-    /* Hero compacto mobile */
     .hero{
       background:linear-gradient(135deg,var(--rose-500),var(--rose-600));
       border-radius:20px;
@@ -80,7 +76,6 @@
       display:block;
     }
 
-    /* Cards */
     .card{
       background:#fff;
       border-radius:16px;
@@ -101,7 +96,6 @@
       color:var(--ink-900);
     }
 
-    /* Forms mobile-first */
     label{
       display:block;
       font-weight:600;
@@ -127,7 +121,6 @@
     .row{display:flex;gap:12px;margin-bottom:16px}
     .row .field{flex:1;margin-bottom:0}
 
-    /* Botões otimizados para toque */
     .btn{
       background:var(--rose-500);
       color:#fff;
@@ -146,30 +139,32 @@
       box-shadow:0 2px 8px rgba(255,107,151,.3);
     }
 
-    /* Checkbox mobile */
-    .checkbox{
-      display:flex;
-      gap:12px;
-      align-items:flex-start;
-      margin:16px 0;
-      padding:12px;
-      background:var(--rose-50);
-      border-radius:12px;
+    .btn-gradient {
+      background: linear-gradient(135deg, #ff2d55, #ff8a00);
+      color: #fff !important;
+      border: 0;
+      border-radius: 12px;
+      padding: 16px;
+      font-weight: 700;
+      box-shadow: 0 8px 20px rgba(255, 80, 0, .25);
+      transition: transform .08s ease, box-shadow .2s ease, filter .2s ease;
+      display: inline-block;
+      text-decoration: none;
+      outline: none;
+      width: 100%;
+      text-align: center;
+      cursor: pointer;
     }
-    .checkbox input{
-      width:20px;
-      height:20px;
-      margin-top:2px;
-      flex-shrink:0;
+    .btn-gradient:hover { 
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(255, 80, 0, .33);
+      filter: saturate(1.05);
     }
-    .checkbox label{
-      margin:0;
-      font-size:13px;
-      font-weight:500;
-      line-height:1.4;
+    .btn-gradient:active {
+      transform: scale(.98);
+      box-shadow: 0 6px 16px rgba(255, 80, 0, .24);
     }
 
-    /* Tags e status */
     .tag{
       display:inline-block;
       padding:6px 12px;
@@ -181,7 +176,6 @@
     .tag.warn{background:#fffbeb;color:var(--warn)}
     .tag.bad{background:#fef2f2;color:var(--bad)}
 
-    /* Resultado */
     .result-box{
       background:linear-gradient(135deg,#f9fafb,#fff);
       border:2px dashed var(--rose-200);
@@ -202,7 +196,6 @@
       margin-bottom:16px;
     }
 
-    /* Lista de dicas */
     .tips{
       background:var(--rose-50);
       border-radius:12px;
@@ -217,7 +210,6 @@
     }
     .tips li:last-child{margin-bottom:0}
 
-    /* Instruções visuais */
     .instruction-box{
       background:#f9fafb;
       border-left:4px solid var(--rose-400);
@@ -233,7 +225,6 @@
     }
     .instruction-box strong{color:var(--ink-700)}
 
-    /* Toast mobile */
     .toast{
       position:fixed;
       bottom:20px;
@@ -258,7 +249,6 @@
       transform:translateX(-50%) translateY(0);
     }
 
-    /* Utilitários */
     .hide{display:none}
     .muted{color:var(--ink-300);font-size:13px;line-height:1.4}
     .footer{
@@ -269,49 +259,12 @@
       padding:16px;
     }
 
-    /* Media query para telas maiores */
     @media (min-width:640px){
       .wrap{padding:24px}
       h1{font-size:32px}
       .hero{padding:32px}
       .card{padding:28px}
     }
-
-
-    /* Botão com gradiente para o CTA Black Friday */
-.btn-gradient {
-  background: linear-gradient(135deg, #ff2d55, #ff8a00);
-  color: #fff !important;
-  border: 0;
-  border-radius: 999px;
-  padding: 12px 18px;
-  font-weight: 700;
-  box-shadow: 0 8px 20px rgba(255, 80, 0, .25);
-  transition: transform .08s ease, box-shadow .2s ease, filter .2s ease;
-  display: inline-block;
-  text-decoration: none;
-  outline: none;
-}
-.btn-gradient:hover { 
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(255, 80, 0, .33);
-  filter: saturate(1.05);
-}
-.btn-gradient:active {
-  transform: translateY(0);
-  box-shadow: 0 6px 16px rgba(255, 80, 0, .24);
-}
-.btn-gradient:focus-visible {
-  box-shadow:
-    0 0 0 3px rgba(255,255,255,.9),
-    0 0 0 6px rgba(255, 80, 0, .5),
-    0 8px 20px rgba(255,80,0,.25);
-}
-@media (prefers-reduced-motion: reduce) {
-  .btn-gradient { transition: none; }
-  .btn-gradient:hover, .btn-gradient:active { transform: none; }
-}
-
   </style>
 </head>
 <body>
@@ -353,7 +306,7 @@
         </div>
 
         <div class="field">
-          <label for="whats">WhatsApp </label>
+          <label for="whats">WhatsApp</label>
           <input id="whats" name="whats" inputmode="tel" placeholder="" />
         </div>
 
@@ -363,7 +316,6 @@
         </div>
 
         <button type="submit" class="btn">✨ Liberar Teste Agora</button>
-        
       </form>
 
       <div id="afterLead" class="hide" style="margin-top:16px;text-align:center">
@@ -383,6 +335,16 @@
       </div>
 
       <form id="whrForm" novalidate>
+        <div class="field">
+          <label for="nomeResult">Nome completo*</label>
+          <input id="nomeResult" name="nomeResult" required placeholder="" />
+        </div>
+
+        <div class="field">
+          <label for="emailResult">E-mail*</label>
+          <input id="emailResult" name="emailResult" type="email" required placeholder="" />
+        </div>
+
         <div class="field">
           <label for="sexo">Confirme seu sexo</label>
           <select id="sexo" name="sexo" required>
@@ -417,40 +379,16 @@
           <li>📊 Valores elevados indicam maior risco de doenças cardíacas, diabetes e gordura no fígado</li>
           <li>💪 Mesmo com peso normal, RCQ alto sugere gordura visceral</li>
         </div>
-        <!-- CTA de download do PDF 
-        <div id="downloadBox" class="hide" style="margin-top:16px;text-align:center">
-          <p style="margin:0 0 10px;font-size:15px">
-            📥 Baixe o guia <strong>“Açúcar escondido”</strong> e aprenda a identificar rótulos.
-          </p>
-          <a id="downloadPdf" class="btn" href="#" download target="_blank" rel="noopener">
-            ⬇️ Baixar PDF
+
+        <!-- CTA Black Friday (aparece APÓS o resultado) -->
+        <div id="bfBox" class="hide" style="margin-top:20px;padding-top:20px;border-top:2px dashed var(--rose-200)">
+          <p id="bfMsg" style="margin:0 0 16px;font-size:15px;line-height:1.5;text-align:center"></p>
+          <a id="bfBtn" class="btn-gradient" href="#" target="_blank" rel="noopener">
+            Ver oferta Black Friday
           </a>
-          <p class="muted" style="margin-top:8px">Se não baixar automaticamente, ele abrirá em uma nova aba.</p>
-        </div>-->
-
+          <p class="muted" style="margin-top:10px;text-align:center">Abre em uma nova aba</p>
+        </div>
       </div>
-  <!-- CTA Black Friday +Maravilhosas -->
-<div id="bfBox" class="hide" style="margin-top:16px;text-align:center">
-  <p id="bfMsg" style="margin:0 0 10px;font-size:15px"></p>
-  <a id="bfBtn" class="btn btn-gradient" href="#" target="_blank" rel="noopener">
-    Ver oferta Black Friday
-  </a>
-  <p class="muted" style="margin-top:8px">Abre em uma nova aba.</p>
-</div>
-
-  <a id="bfBtn" class="btn" href="#" target="_blank" rel="noopener"
-   style="background: linear-gradient(135deg,#ff2d55,#ff8a00);
-          color:#fff;border:0;border-radius:999px;
-          padding:12px 18px;font-weight:700;
-          box-shadow:0 8px 20px rgba(255,80,0,.25);
-          transition:transform .08s ease, box-shadow .2s ease;
-          display:inline-block;">
-  Ver oferta Black Friday
-</a>
-
-  <p class="muted" style="margin-top:8px">Abre em uma nova aba.</p>
-</div>
-
     </div>
 
     <!-- Interpretação -->
@@ -479,11 +417,7 @@
 
   <script>
     const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbym4vgfn6HGvTmgOZ27OlWZe-z2ucZfOIkwolB85XAaVqccxk9YyxBkMwQmcohzIGPd/exec";
-
-    // Nome do PDF no mesmo diretório do index (atenção aos acentos)
-    const PDF_NAME = "Açúcar escondido.pdf";
-    // Gera a URL relativa corretamente codificada (funciona no GitHub Pages também)
-    const PDF_URL = encodeURI(PDF_NAME);
+    const BF_URL = "https://renataborbanutri.github.io/blackmaravilhosas/";
 
     function showToast(msg){
       const t = document.getElementById('toast');
@@ -492,51 +426,45 @@
       setTimeout(()=>t.classList.remove('show'),2500);
     }
 
-// URL da Black Friday do +Maravilhosas
-const BF_URL = "https://renataborbanutri.github.io/blackmaravilhosas/";
+    function buildBfUrl(rcq, tag){
+      try{
+        const u = new URL(BF_URL);
+        u.searchParams.set('utm_source','whr_teste');
+        u.searchParams.set('utm_medium','cta');
+        u.searchParams.set('utm_campaign','blackfriday_2025');
+        u.searchParams.set('rcq', Number(rcq).toFixed(2));
+        u.searchParams.set('status', tag);
+        return u.toString();
+      }catch(_){
+        const qs = new URLSearchParams({
+          utm_source:'whr_teste',
+          utm_medium:'cta',
+          utm_campaign:'blackfriday_2025',
+          rcq: Number(rcq).toFixed(2),
+          status: tag
+        }).toString();
+        return BF_URL + (BF_URL.includes('?') ? '&' : '?') + qs;
+      }
+    }
 
-// Monta URL com UTM e parâmetros do teste
-function buildBfUrl(rcq, tag){
-  try{
-    const u = new URL(BF_URL);
-    u.searchParams.set('utm_source','whr_teste');
-    u.searchParams.set('utm_medium','cta');
-    u.searchParams.set('utm_campaign','blackfriday_2025');
-    u.searchParams.set('rcq', Number(rcq).toFixed(2));
-    u.searchParams.set('status', tag); // 'ok' | 'bad'
-    return u.toString();
-  }catch(_){
-    const qs = new URLSearchParams({
-      utm_source:'whr_teste',
-      utm_medium:'cta',
-      utm_campaign:'blackfriday_2025',
-      rcq: Number(rcq).toFixed(2),
-      status: tag
-    }).toString();
-    return BF_URL + (BF_URL.includes('?') ? '&' : '?') + qs;
-  }
-}
-
-    const STORE_KEY = "mm_whr_leads_v1";
-    const leadFields = ["nome","email","whats","idade","cidade","sexoLead","consent"];
-
+    const leadFields = ["nome","email","whats","idade","cidade","sexoLead"];
+    
     function saveLeadDraft(){
       const data = {};
       leadFields.forEach(id=>{
         const el = document.getElementById(id);
         if(!el) return;
-        data[id] = el.type === 'checkbox' ? el.checked : el.value;
+        data[id] = el.value;
       });
       window.leadDraft = data;
     }
-
+    
     function loadLeadDraft(){
       if(!window.leadDraft) return;
       leadFields.forEach(id=>{
         const el = document.getElementById(id);
         if(!el || !(id in window.leadDraft)) return;
-        if(el.type === 'checkbox') el.checked = !!window.leadDraft[id];
-        else el.value = window.leadDraft[id] || "";
+        el.value = window.leadDraft[id] || "";
       });
     }
 
@@ -572,7 +500,7 @@ function buildBfUrl(rcq, tag){
       const email = document.getElementById('email').value.trim();
       const sexoLead = document.getElementById('sexoLead').value;
 
-      if(!nome || !email || !sexoLead ){
+      if(!nome || !email || !sexoLead){
         showToast('⚠️ Preencha todos os campos obrigatórios');
         return;
       }
@@ -590,42 +518,18 @@ function buildBfUrl(rcq, tag){
       afterLead.classList.remove('hide');
       testCard.classList.remove('hide');
       document.getElementById('sexo').value = sexoLead;
+      document.getElementById('nomeResult').value = nome;
+      document.getElementById('emailResult').value = email;
       testCard.scrollIntoView({behavior:'smooth',block:'start'});
       showToast('✅ Teste liberado! Role para baixo');
 
       postWebhook(doc);
-      //window.leadDraft = null;
     });
 
     const whrForm = document.getElementById('whrForm');
     const resultBox = document.getElementById('result');
     const ratioLine = document.getElementById('ratioLine');
     const statusLine = document.getElementById('statusLine');
-
-    // === CTA Black Friday +Maravilhosas (mensagem condicional) ===
-const bfBox = document.getElementById('bfBox');
-const bfMsg = document.getElementById('bfMsg');
-const bfBtn = document.getElementById('bfBtn');
-
-if (bfBox && bfMsg && bfBtn) {
-  if (klass.tag === 'bad') {
-    bfMsg.innerHTML = '⚠️ Seu resultado pede atenção. Veja a <strong>oferta especial da Black Friday do +Maravilhosas</strong> e dê o primeiro passo para reduzir gordura visceral, desinflamar e recuperar sua energia.';
-    bfBtn.textContent = 'Ir para a Oferta Black Friday';
-  } else if (klass.tag === 'ok') {
-    bfMsg.innerHTML = '✅ Ótimo resultado! Mesmo assim, se você sente <strong>dificuldade de perder peso</strong>, <strong>falta de energia</strong> ou <strong>cansaço durante o dia</strong>, conheça o <strong>+Maravilhosas</strong>.';
-    bfBtn.textContent = 'Quero conhecer o +Maravilhosas';
-  } else {
-    bfMsg.textContent = 'Aproveite a Black Friday do +Maravilhosas e saiba como dar o próximo passo.';
-    bfBtn.textContent = 'Ver oferta';
-  }
-
-  bfBtn.href = buildBfUrl(rcq, klass.tag);
-  bfBox.classList.remove('hide');
-}
-// === /CTA Black Friday ===
-
-
-
 
     function fmt(x){ return Number(x).toFixed(2); }
 
@@ -645,12 +549,14 @@ if (bfBox && bfMsg && bfBtn) {
     whrForm.addEventListener('submit', async (e)=>{
       e.preventDefault();
 
+      const nomeResult = document.getElementById('nomeResult').value.trim();
+      const emailResult = document.getElementById('emailResult').value.trim();
       const sexo = document.getElementById('sexo').value;
       const c = parseFloat(document.getElementById('cintura').value);
       const q = parseFloat(document.getElementById('quadril').value);
 
-      if(!sexo || !c || !q || q<=0){
-        showToast('⚠️ Preencha todos os campos');
+      if(!nomeResult || !emailResult || !sexo || !c || !q || q<=0){
+        showToast('⚠️ Preencha todos os campos obrigatórios');
         return;
       }
 
@@ -658,25 +564,36 @@ if (bfBox && bfMsg && bfBtn) {
       const klass = classify(sexo, rcq);
 
       resultBox.classList.remove('hide');
-
-      // Mostrar CTA de download do PDF após o cálculo
-      const downloadBox = document.getElementById('downloadBox');
-      const downloadPdf = document.getElementById('downloadPdf');
-      if (downloadBox && downloadPdf) {
-        downloadPdf.href = PDF_URL;          // linka para "Açúcar escondido.pdf" no mesmo repositório
-        downloadPdf.setAttribute('download', PDF_NAME); // tenta forçar download quando possível
-        downloadBox.classList.remove('hide'); // exibe o bloco
-      }
-
-
       ratioLine.textContent = fmt(rcq);
       statusLine.innerHTML = `<span class="tag ${klass.tag}">${klass.label}</span><p style="margin:8px 0 0;font-size:15px">${klass.msg}</p>`;
+
+      // CTA Black Friday (agora DEPOIS do resultado)
+      const bfBox = document.getElementById('bfBox');
+      const bfMsg = document.getElementById('bfMsg');
+      const bfBtn = document.getElementById('bfBtn');
+
+      if (bfBox && bfMsg && bfBtn) {
+        if (klass.tag === 'bad') {
+          bfMsg.innerHTML = '⚠️ Seu resultado pede atenção. Veja a <strong>oferta especial da Black Friday do +Maravilhosas</strong> e dê o primeiro passo para reduzir gordura visceral, desinflamar e recuperar sua energia.';
+          bfBtn.textContent = 'Ir para a Oferta Black Friday';
+        } else if (klass.tag === 'ok') {
+          bfMsg.innerHTML = '✅ Ótimo resultado! Mesmo assim, se você sente <strong>dificuldade de perder peso</strong>, <strong>falta de energia</strong> ou <strong>cansaço durante o dia</strong>, conheça o <strong>+Maravilhosas</strong>.';
+          bfBtn.textContent = 'Quero conhecer o +Maravilhosas';
+        } else {
+          bfMsg.textContent = 'Aproveite a Black Friday do +Maravilhosas e saiba como dar o próximo passo.';
+          bfBtn.textContent = 'Ver oferta';
+        }
+
+        bfBtn.href = buildBfUrl(rcq, klass.tag);
+        bfBox.classList.remove('hide');
+      }
+
       resultBox.scrollIntoView({behavior:'smooth',block:'center'});
       showToast('✅ Resultado calculado!');
 
       const payloadRes = {
-        nome: document.getElementById('nome').value.trim(),
-        email: document.getElementById('email').value.trim(),
+        nome: nomeResult,
+        email: emailResult,
         sexo,
         cintura: c,
         quadril: q,
@@ -686,21 +603,6 @@ if (bfBox && bfMsg && bfBtn) {
 
       postWebhook(payloadRes);
     });
-  
-  const _bfBtn = document.getElementById('bfBtn');
-if (_bfBtn){
-  _bfBtn.addEventListener('mouseenter',()=>{ 
-    _bfBtn.style.transform='translateY(-1px)';
-    _bfBtn.style.boxShadow='0 10px 24px rgba(255,80,0,.33)';
-  });
-  _bfBtn.addEventListener('mouseleave',()=>{ 
-    _bfBtn.style.transform='none';
-    _bfBtn.style.boxShadow='0 8px 20px rgba(255,80,0,.25)';
-  });
-}
-
   </script>
-
-  
 </body>
 </html>
