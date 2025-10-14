@@ -293,18 +293,18 @@
       <form id="leadForm" autocomplete="on" novalidate>
         <div class="field">
           <label for="nome">Nome completo*</label>
-          <input id="nome" name="nome" required placeholder="Maria Silva" />
+          <input id="nome" name="nome" required placeholder="" />
         </div>
 
         <div class="field">
           <label for="email">Seu melhor e-mail*</label>
-          <input id="email" name="email" type="email" required placeholder="maria@email.com" />
+          <input id="email" name="email" type="email" required placeholder="" />
         </div>
 
         <div class="row">
           <div class="field">
             <label for="idade">Idade</label>
-            <input id="idade" name="idade" type="number" min="10" max="100" placeholder="Ex: 35" />
+            <input id="idade" name="idade" type="number" min="10" max="100" placeholder="" />
           </div>
           <div class="field">
             <label for="sexoLead">Sexo*</label>
@@ -488,9 +488,8 @@
       const nome = document.getElementById('nome').value.trim();
       const email = document.getElementById('email').value.trim();
       const sexoLead = document.getElementById('sexoLead').value;
-      const consent = document.getElementById('consent').checked;
 
-      if(!nome || !email || !sexoLead || !consent){
+      if(!nome || !email || !sexoLead ){
         showToast('⚠️ Preencha todos os campos obrigatórios');
         return;
       }
