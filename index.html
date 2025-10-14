@@ -276,6 +276,42 @@
       .hero{padding:32px}
       .card{padding:28px}
     }
+
+
+    /* Botão com gradiente para o CTA Black Friday */
+.btn-gradient {
+  background: linear-gradient(135deg, #ff2d55, #ff8a00);
+  color: #fff !important;
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(255, 80, 0, .25);
+  transition: transform .08s ease, box-shadow .2s ease, filter .2s ease;
+  display: inline-block;
+  text-decoration: none;
+  outline: none;
+}
+.btn-gradient:hover { 
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(255, 80, 0, .33);
+  filter: saturate(1.05);
+}
+.btn-gradient:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 16px rgba(255, 80, 0, .24);
+}
+.btn-gradient:focus-visible {
+  box-shadow:
+    0 0 0 3px rgba(255,255,255,.9),
+    0 0 0 6px rgba(255, 80, 0, .5),
+    0 8px 20px rgba(255,80,0,.25);
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-gradient { transition: none; }
+  .btn-gradient:hover, .btn-gradient:active { transform: none; }
+}
+
   </style>
 </head>
 <body>
@@ -317,7 +353,7 @@
         </div>
 
         <div class="field">
-          <label for="whats">WhatsApp  required </label>
+          <label for="whats">WhatsApp </label>
           <input id="whats" name="whats" inputmode="tel" placeholder="" />
         </div>
 
@@ -393,13 +429,14 @@
         </div>-->
 
       </div>
-      <!-- CTA Black Friday +Maravilhosas -->
+  <!-- CTA Black Friday +Maravilhosas -->
 <div id="bfBox" class="hide" style="margin-top:16px;text-align:center">
   <p id="bfMsg" style="margin:0 0 10px;font-size:15px"></p>
-  <!--
-  <a id="bfBtn" class="btn" href="#" target="_blank" rel="noopener">
+  <a id="bfBtn" class="btn btn-gradient" href="#" target="_blank" rel="noopener">
     Ver oferta Black Friday
-  </a>-->
+  </a>
+  <p class="muted" style="margin-top:8px">Abre em uma nova aba.</p>
+</div>
 
   <a id="bfBtn" class="btn" href="#" target="_blank" rel="noopener"
    style="background: linear-gradient(135deg,#ff2d55,#ff8a00);
@@ -458,31 +495,27 @@
 // URL da Black Friday do +Maravilhosas
 const BF_URL = "https://renataborbanutri.github.io/blackmaravilhosas/";
 
-    // Monta URL com UTM e parâmetros úteis para analytics
-    function buildBfUrl(rcq, tag){
-      try{
-        const u = new URL(BF_URL);
-        u.searchParams.set('utm_source','whr_teste');
-        u.searchParams.set('utm_medium','cta');
-        u.searchParams.set('utm_campaign','blackfriday_2025');
-        u.searchParams.set('rcq', Number(rcq).toFixed(2));
-        u.searchParams.set('status', tag); // 'ok' | 'bad'
-        return u.toString();
-      }catch(_){
-        // fallback caso BF_URL não seja parseável
-        const qs = new URLSearchParams({
-          utm_source:'whr_teste',
-          utm_medium:'cta',
-          utm_campaign:'blackfriday_2025',
-          rcq: Number(rcq).toFixed(2),
-          status: tag
-        }).toString();
-        return BF_URL + (BF_URL.includes('?') ? '&' : '?') + qs;
-      }
-    }
-
-
-
+// Monta URL com UTM e parâmetros do teste
+function buildBfUrl(rcq, tag){
+  try{
+    const u = new URL(BF_URL);
+    u.searchParams.set('utm_source','whr_teste');
+    u.searchParams.set('utm_medium','cta');
+    u.searchParams.set('utm_campaign','blackfriday_2025');
+    u.searchParams.set('rcq', Number(rcq).toFixed(2));
+    u.searchParams.set('status', tag); // 'ok' | 'bad'
+    return u.toString();
+  }catch(_){
+    const qs = new URLSearchParams({
+      utm_source:'whr_teste',
+      utm_medium:'cta',
+      utm_campaign:'blackfriday_2025',
+      rcq: Number(rcq).toFixed(2),
+      status: tag
+    }).toString();
+    return BF_URL + (BF_URL.includes('?') ? '&' : '?') + qs;
+  }
+}
 
     const STORE_KEY = "mm_whr_leads_v1";
     const leadFields = ["nome","email","whats","idade","cidade","sexoLead","consent"];
@@ -575,25 +608,18 @@ const bfMsg = document.getElementById('bfMsg');
 const bfBtn = document.getElementById('bfBtn');
 
 if (bfBox && bfMsg && bfBtn) {
-  // Define a mensagem conforme a classificação
   if (klass.tag === 'bad') {
-    // Resultado ruim / atenção
     bfMsg.innerHTML = '⚠️ Seu resultado pede atenção. Veja a <strong>oferta especial da Black Friday do +Maravilhosas</strong> e dê o primeiro passo para reduzir gordura visceral, desinflamar e recuperar sua energia.';
     bfBtn.textContent = 'Ir para a Oferta Black Friday';
   } else if (klass.tag === 'ok') {
-    // Resultado bom / convite suave
     bfMsg.innerHTML = '✅ Ótimo resultado! Mesmo assim, se você sente <strong>dificuldade de perder peso</strong>, <strong>falta de energia</strong> ou <strong>cansaço durante o dia</strong>, conheça o <strong>+Maravilhosas</strong>.';
     bfBtn.textContent = 'Quero conhecer o +Maravilhosas';
   } else {
-    // Falta selecionar sexo etc.
     bfMsg.textContent = 'Aproveite a Black Friday do +Maravilhosas e saiba como dar o próximo passo.';
     bfBtn.textContent = 'Ver oferta';
   }
 
-  // Aponta o botão para a URL com UTM e parâmetros do teste
   bfBtn.href = buildBfUrl(rcq, klass.tag);
-
-  // Exibe o bloco
   bfBox.classList.remove('hide');
 }
 // === /CTA Black Friday ===
