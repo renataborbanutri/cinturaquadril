@@ -393,6 +393,27 @@
         </div>-->
 
       </div>
+      <!-- CTA Black Friday +Maravilhosas -->
+<div id="bfBox" class="hide" style="margin-top:16px;text-align:center">
+  <p id="bfMsg" style="margin:0 0 10px;font-size:15px"></p>
+  <!--
+  <a id="bfBtn" class="btn" href="#" target="_blank" rel="noopener">
+    Ver oferta Black Friday
+  </a>-->
+
+  <a id="bfBtn" class="btn" href="#" target="_blank" rel="noopener"
+   style="background: linear-gradient(135deg,#ff2d55,#ff8a00);
+          color:#fff;border:0;border-radius:999px;
+          padding:12px 18px;font-weight:700;
+          box-shadow:0 8px 20px rgba(255,80,0,.25);
+          transition:transform .08s ease, box-shadow .2s ease;
+          display:inline-block;">
+  Ver oferta Black Friday
+</a>
+
+  <p class="muted" style="margin-top:8px">Abre em uma nova aba.</p>
+</div>
+
     </div>
 
     <!-- Interpretação -->
@@ -433,6 +454,35 @@
       t.classList.add('show');
       setTimeout(()=>t.classList.remove('show'),2500);
     }
+
+// URL da Black Friday do +Maravilhosas
+const BF_URL = "https://renataborbanutri.github.io/blackmaravilhosas/";
+
+    // Monta URL com UTM e parâmetros úteis para analytics
+    function buildBfUrl(rcq, tag){
+      try{
+        const u = new URL(BF_URL);
+        u.searchParams.set('utm_source','whr_teste');
+        u.searchParams.set('utm_medium','cta');
+        u.searchParams.set('utm_campaign','blackfriday_2025');
+        u.searchParams.set('rcq', Number(rcq).toFixed(2));
+        u.searchParams.set('status', tag); // 'ok' | 'bad'
+        return u.toString();
+      }catch(_){
+        // fallback caso BF_URL não seja parseável
+        const qs = new URLSearchParams({
+          utm_source:'whr_teste',
+          utm_medium:'cta',
+          utm_campaign:'blackfriday_2025',
+          rcq: Number(rcq).toFixed(2),
+          status: tag
+        }).toString();
+        return BF_URL + (BF_URL.includes('?') ? '&' : '?') + qs;
+      }
+    }
+
+
+
 
     const STORE_KEY = "mm_whr_leads_v1";
     const leadFields = ["nome","email","whats","idade","cidade","sexoLead","consent"];
@@ -519,6 +569,38 @@
     const ratioLine = document.getElementById('ratioLine');
     const statusLine = document.getElementById('statusLine');
 
+    // === CTA Black Friday +Maravilhosas (mensagem condicional) ===
+const bfBox = document.getElementById('bfBox');
+const bfMsg = document.getElementById('bfMsg');
+const bfBtn = document.getElementById('bfBtn');
+
+if (bfBox && bfMsg && bfBtn) {
+  // Define a mensagem conforme a classificação
+  if (klass.tag === 'bad') {
+    // Resultado ruim / atenção
+    bfMsg.innerHTML = '⚠️ Seu resultado pede atenção. Veja a <strong>oferta especial da Black Friday do +Maravilhosas</strong> e dê o primeiro passo para reduzir gordura visceral, desinflamar e recuperar sua energia.';
+    bfBtn.textContent = 'Ir para a Oferta Black Friday';
+  } else if (klass.tag === 'ok') {
+    // Resultado bom / convite suave
+    bfMsg.innerHTML = '✅ Ótimo resultado! Mesmo assim, se você sente <strong>dificuldade de perder peso</strong>, <strong>falta de energia</strong> ou <strong>cansaço durante o dia</strong>, conheça o <strong>+Maravilhosas</strong>.';
+    bfBtn.textContent = 'Quero conhecer o +Maravilhosas';
+  } else {
+    // Falta selecionar sexo etc.
+    bfMsg.textContent = 'Aproveite a Black Friday do +Maravilhosas e saiba como dar o próximo passo.';
+    bfBtn.textContent = 'Ver oferta';
+  }
+
+  // Aponta o botão para a URL com UTM e parâmetros do teste
+  bfBtn.href = buildBfUrl(rcq, klass.tag);
+
+  // Exibe o bloco
+  bfBox.classList.remove('hide');
+}
+// === /CTA Black Friday ===
+
+
+
+
     function fmt(x){ return Number(x).toFixed(2); }
 
     function classify(sexo, rcq){
@@ -578,6 +660,21 @@
 
       postWebhook(payloadRes);
     });
+  
+  const _bfBtn = document.getElementById('bfBtn');
+if (_bfBtn){
+  _bfBtn.addEventListener('mouseenter',()=>{ 
+    _bfBtn.style.transform='translateY(-1px)';
+    _bfBtn.style.boxShadow='0 10px 24px rgba(255,80,0,.33)';
+  });
+  _bfBtn.addEventListener('mouseleave',()=>{ 
+    _bfBtn.style.transform='none';
+    _bfBtn.style.boxShadow='0 8px 20px rgba(255,80,0,.25)';
+  });
+}
+
   </script>
+
+  
 </body>
 </html>
