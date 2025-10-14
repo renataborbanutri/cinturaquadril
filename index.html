@@ -381,7 +381,7 @@
           <li>📊 Valores elevados indicam maior risco de doenças cardíacas, diabetes e gordura no fígado</li>
           <li>💪 Mesmo com peso normal, RCQ alto sugere gordura visceral</li>
         </div>
-        <!-- CTA de download do PDF -->
+        <!-- CTA de download do PDF 
         <div id="downloadBox" class="hide" style="margin-top:16px;text-align:center">
           <p style="margin:0 0 10px;font-size:15px">
             📥 Baixe o guia <strong>“Açúcar escondido”</strong> e aprenda a identificar rótulos.
@@ -390,7 +390,7 @@
             ⬇️ Baixar PDF
           </a>
           <p class="muted" style="margin-top:8px">Se não baixar automaticamente, ele abrirá em uma nova aba.</p>
-        </div>
+        </div>-->
 
       </div>
     </div>
@@ -511,7 +511,7 @@
       showToast('✅ Teste liberado! Role para baixo');
 
       postWebhook(doc);
-      window.leadDraft = null;
+      //window.leadDraft = null;
     });
 
     const whrForm = document.getElementById('whrForm');
@@ -567,14 +567,15 @@
       showToast('✅ Resultado calculado!');
 
       const payloadRes = {
-        nome: (window.leadDraft?.nome || '').trim(),
-        email: (window.leadDraft?.email || '').trim(),
+        nome: document.getElementById('nome').value.trim(),
+        email: document.getElementById('email').value.trim(),
         sexo,
         cintura: c,
         quadril: q,
         rcq: Number(rcq.toFixed(2)),
         ts: new Date().toISOString()
       };
+
       postWebhook(payloadRes);
     });
   </script>
