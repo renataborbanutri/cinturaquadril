@@ -356,6 +356,17 @@
 
         <div class="row">
           <div class="field">
+            <label for="peso">Peso (kg)</label>
+            <input id="peso" name="peso" type="number" min="30" max="300" step="0.1" placeholder="Ex: 65.5" required />
+          </div>
+          <div class="field">
+            <label for="altura">Altura (cm)</label>
+            <input id="altura" name="altura" type="number" min="100" max="250" step="0.1" placeholder="Ex: 165" required />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
             <label for="cintura">Cintura (cm)</label>
             <input id="cintura" name="cintura" type="number" min="30" max="200" step="0.1" placeholder="Ex: 75.5" required />
           </div>
@@ -370,12 +381,24 @@
 
       <!-- Resultado -->
       <div id="result" class="result-box hide">
-        <div class="ratio-display" id="ratioLine">–</div>
-        <div class="status-msg" id="statusLine"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div style="text-align:center">
+            <div style="font-size:14px;font-weight:600;color:var(--ink-500);margin-bottom:4px">RCQ</div>
+            <div class="ratio-display" id="ratioLine" style="font-size:36px;margin:0">–</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:14px;font-weight:600;color:var(--ink-500);margin-bottom:4px">IMC</div>
+            <div class="ratio-display" id="imcLine" style="font-size:36px;margin:0">–</div>
+          </div>
+        </div>
+        
+        <div id="statusLine" style="margin-bottom:12px"></div>
+        <div id="imcStatus" style="margin-bottom:12px"></div>
 
         <div class="tips">
-          <li><strong>Mulheres:</strong> Ideal abaixo de 0,80</li>
-          <li><strong>Homens:</strong> Ideal abaixo de 0,95</li>
+          <li><strong>RCQ - Mulheres:</strong> Ideal abaixo de 0,80</li>
+          <li><strong>RCQ - Homens:</strong> Ideal abaixo de 0,95</li>
+          <li><strong>IMC:</strong> 18,5-24,9 (saudável) | 25-29,9 (sobrepeso) | ≥30 (obesidade)</li>
           <li>📊 Valores elevados indicam maior risco de doenças cardíacas, diabetes e gordura no fígado</li>
           <li>💪 Mesmo com peso normal, RCQ alto sugere gordura visceral</li>
         </div>
@@ -529,7 +552,9 @@
     const whrForm = document.getElementById('whrForm');
     const resultBox = document.getElementById('result');
     const ratioLine = document.getElementById('ratioLine');
+    const imcLine = document.getElementById('imcLine');
     const statusLine = document.getElementById('statusLine');
+    const imcStatus = document.getElementById('imcStatus');
 
     function fmt(x){ return Number(x).toFixed(2); }
 
@@ -546,26 +571,46 @@
       return {tag:'warn', label:'Selecione o sexo', msg:''}
     }
 
+    function classifyIMC(imc){
+      if(imc < 18.5){
+        return {tag:'warn', label:'Abaixo do peso', msg:'IMC abaixo de 18,5'};
+      } else if(imc < 25){
+        return {tag:'ok', label:'Peso saudável', msg:'IMC entre 18,5 e 24,9'};
+      } else if(imc < 30){
+        return {tag:'warn', label:'Sobrepeso', msg:'IMC entre 25 e 29,9'};
+      } else {
+        return {tag:'bad', label:'Obesidade', msg:'IMC ≥ 30'};
+      }
+    }
+
     whrForm.addEventListener('submit', async (e)=>{
       e.preventDefault();
 
       const nomeResult = document.getElementById('nomeResult').value.trim();
       const emailResult = document.getElementById('emailResult').value.trim();
       const sexo = document.getElementById('sexo').value;
+      const peso = parseFloat(document.getElementById('peso').value);
+      const altura = parseFloat(document.getElementById('altura').value);
       const c = parseFloat(document.getElementById('cintura').value);
       const q = parseFloat(document.getElementById('quadril').value);
 
-      if(!nomeResult || !emailResult || !sexo || !c || !q || q<=0){
+      if(!nomeResult || !emailResult || !sexo || !peso || !altura || !c || !q || q<=0 || altura<=0 || peso<=0){
         showToast('⚠️ Preencha todos os campos obrigatórios');
         return;
       }
 
       const rcq = c / q;
-      const klass = classify(sexo, rcq);
+      const alturaMetros = altura / 100;
+      const imc = peso / (alturaMetros * alturaMetros);
+      
+      const klassRCQ = classify(sexo, rcq);
+      const klassIMC = classifyIMC(imc);
 
       resultBox.classList.remove('hide');
       ratioLine.textContent = fmt(rcq);
-      statusLine.innerHTML = `<span class="tag ${klass.tag}">${klass.label}</span><p style="margin:8px 0 0;font-size:15px">${klass.msg}</p>`;
+      imcLine.textContent = fmt(imc);
+      statusLine.innerHTML = `<div style="text-align:center;margin-bottom:8px"><span class="tag ${klassRCQ.tag}">${klassRCQ.label}</span></div><p style="margin:0;font-size:14px;text-align:center">${klassRCQ.msg}</p>`;
+      imcStatus.innerHTML = `<div style="text-align:center"><span class="tag ${klassIMC.tag}">${klassIMC.label}</span> <span style="font-size:14px;color:var(--ink-500)">${klassIMC.msg}</span></div>`;
 
       // CTA Black Friday (agora DEPOIS do resultado)
       const bfBox = document.getElementById('bfBox');
@@ -573,18 +618,18 @@
       const bfBtn = document.getElementById('bfBtn');
 
       if (bfBox && bfMsg && bfBtn) {
-        if (klass.tag === 'bad') {
+        if (klassRCQ.tag === 'bad' || klassIMC.tag === 'bad') {
           bfMsg.innerHTML = '⚠️ Seu resultado pede atenção. Veja a <strong>oferta especial da Black Friday do +Maravilhosas</strong> e dê o primeiro passo para reduzir gordura visceral, desinflamar e recuperar sua energia.';
           bfBtn.textContent = 'Ir para a Oferta Black Friday';
-        } else if (klass.tag === 'ok') {
+        } else if (klassRCQ.tag === 'ok' && klassIMC.tag === 'ok') {
           bfMsg.innerHTML = '✅ Ótimo resultado! Mesmo assim, se você sente <strong>dificuldade de perder peso</strong>, <strong>falta de energia</strong> ou <strong>cansaço durante o dia</strong>, conheça o <strong>+Maravilhosas</strong>.';
           bfBtn.textContent = 'Quero conhecer o +Maravilhosas';
         } else {
-          bfMsg.textContent = 'Aproveite a Black Friday do +Maravilhosas e saiba como dar o próximo passo.';
+          bfMsg.innerHTML = 'Seus resultados mostram oportunidade de melhora. Aproveite a <strong>Black Friday do +Maravilhosas</strong> e transforme sua saúde.';
           bfBtn.textContent = 'Ver oferta';
         }
 
-        bfBtn.href = buildBfUrl(rcq, klass.tag);
+        bfBtn.href = buildBfUrl(rcq, klassRCQ.tag);
         bfBox.classList.remove('hide');
       }
 
@@ -595,6 +640,9 @@
         nome: nomeResult,
         email: emailResult,
         sexo,
+        peso: peso,
+        altura: altura,
+        imc: Number(imc.toFixed(2)),
         cintura: c,
         quadril: q,
         rcq: Number(rcq.toFixed(2)),
