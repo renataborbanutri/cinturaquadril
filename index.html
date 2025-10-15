@@ -559,29 +559,47 @@
     function fmt(x){ return Number(x).toFixed(2); }
 
     function classify(sexo, rcq){
-      if(sexo === 'F'){
-        return rcq < 0.80
-          ? {tag:'ok', label:'✅ Resultado Ideal', msg:'Parabéns! Sua relação cintura/quadril está na faixa saudável.'}
-          : {tag:'bad', label:'⚠️ Requer Atenção', msg:'Seu resultado indica risco aumentado. Consulte um profissional de saúde.'};
-      } else if(sexo === 'M'){
-        return rcq < 0.95
-          ? {tag:'ok', label:'✅ Resultado Ideal', msg:'Ótimo! Sua relação cintura/quadril está na faixa saudável.'}
-          : {tag:'bad', label:'⚠️ Requer Atenção', msg:'Seu resultado indica risco aumentado. Consulte um profissional de saúde.'};
-      }
-      return {tag:'warn', label:'Selecione o sexo', msg:''}
-    }
+  if (sexo === 'F') {
+    return rcq < 0.80
+      ? {
+          tag: 'ok',
+          label: '✅ RCQ em faixa saudável',
+          msg: 'Seu acúmulo de gordura abdominal está controlado para o seu perfil. Mantenha constância na alimentação e no treino de força para consolidar esse resultado.'
+        }
+      : {
+          tag: 'bad',
+          label: '⚠️ RCQ acima do ideal',
+          msg: 'Há sinal de maior risco cardiometabólico. Ajustes na alimentação podem reduzir gordura visceral e proteger sua saúde.'
+        };
+  } else if (sexo === 'M') {
+    return rcq < 0.95
+      ? {
+          tag: 'ok',
+          label: '✅ RCQ em faixa saudável',
+          msg: 'Boa! A relação cintura/quadril está adequada. Pequenos upgrades na alimentação podem potencializar sua composição corporal.'
+        }
+      : {
+          tag: 'bad',
+          label: '⚠️ RCQ acima do ideal',
+          msg: 'Indício de maior risco cardiometabólico. Foque em reduzir a medida abdominal com um plano alimentar e controle hormonal através da alimentação.'
+        };
+  }
+  return { tag:'warn', label:'Selecione o sexo', msg:'' };
+}
+
 
     function classifyIMC(imc){
-      if(imc < 18.5){
-        return {tag:'warn', label:'Abaixo do peso', msg:'IMC abaixo de 18,5'};
-      } else if(imc < 25){
-        return {tag:'ok', label:'Peso saudável', msg:'IMC entre 18,5 e 24,9'};
-      } else if(imc < 30){
-        return {tag:'warn', label:'Sobrepeso', msg:'IMC entre 25 e 29,9'};
-      } else {
-        return {tag:'bad', label:'Obesidade', msg:'IMC ≥ 30'};
-      }
-    }
+  if (imc < 18.5) {
+    return { tag:'warn', label:'Abaixo do peso', msg:'Avalie massa muscular e ingestão calórica.' };
+  } else if (imc < 25) {
+    return { tag:'ok', label:'Peso saudável', msg:'Mantenha refeições equilibradas e treinos regulares para preservar massa magra.' };
+  } else if (imc < 30) {
+    return { tag:'warn', label:'Sobrepeso', msg:'Ajustes na alimentação + treino de força ajudam a reduzir gordura e melhorar marcadores metabólicos.' };
+  } else {
+    return { tag:'bad', label:'Obesidade', msg:'Atenção: um plano estruturado pode reduzir riscos e melhorar sua disposição no dia a dia.' };
+  }
+}
+
 
     whrForm.addEventListener('submit', async (e)=>{
       e.preventDefault();
@@ -613,25 +631,29 @@
       imcStatus.innerHTML = `<div style="text-align:center"><span class="tag ${klassIMC.tag}">${klassIMC.label}</span> <span style="font-size:14px;color:var(--ink-500)">${klassIMC.msg}</span></div>`;
 
       // CTA Black Friday (agora DEPOIS do resultado)
-      const bfBox = document.getElementById('bfBox');
-      const bfMsg = document.getElementById('bfMsg');
-      const bfBtn = document.getElementById('bfBtn');
+const bfBox = document.getElementById('bfBox');
+const bfMsg = document.getElementById('bfMsg');
+const bfBtn = document.getElementById('bfBtn');
 
-      if (bfBox && bfMsg && bfBtn) {
-        if (klassRCQ.tag === 'bad' || klassIMC.tag === 'bad') {
-          bfMsg.innerHTML = '⚠️ Seu resultado pede atenção. Veja a <strong>oferta especial da Black Friday do +Maravilhosas</strong> e dê o primeiro passo para reduzir gordura visceral, desinflamar e recuperar sua energia.';
-          bfBtn.textContent = 'Ir para a Oferta Black Friday';
-        } else if (klassRCQ.tag === 'ok' && klassIMC.tag === 'ok') {
-          bfMsg.innerHTML = '✅ Ótimo resultado! Mesmo assim, se você sente <strong>dificuldade de perder peso</strong>, <strong>falta de energia</strong> ou <strong>cansaço durante o dia</strong>, conheça o <strong>+Maravilhosas</strong>.';
-          bfBtn.textContent = 'Quero conhecer o +Maravilhosas';
-        } else {
-          bfMsg.innerHTML = 'Seus resultados mostram oportunidade de melhora. Aproveite a <strong>Black Friday do +Maravilhosas</strong> e transforme sua saúde.';
-          bfBtn.textContent = 'Ver oferta';
-        }
+if (bfBox && bfMsg && bfBtn) {
+  if (klassRCQ.tag === 'bad' || klassIMC.tag === 'bad') {
+    // Resultado com pontos de atenção
+    bfMsg.innerHTML = '⚠️ Seus números pedem atenção. Na <strong>Black Friday do +Maravilhosas</strong> você encontra um passo a passo prático para reduzir gordura abdominal, desinflamar e ganhar energia. Clique e veja como começar hoje.';
+    bfBtn.textContent = 'Quero meu plano Black Friday';
+  } else if (klassRCQ.tag === 'ok' && klassIMC.tag === 'ok') {
+    // Resultado bom: convite suave
+    bfMsg.innerHTML = '✅ Resultado ótimo! Mesmo com indicadores bons, se você sente <strong>dificuldade de perder gordura</strong>, <strong>falta de energia</strong> ou <strong>cansaço durante o dia</strong>, o <strong>+Maravilhosas</strong> mostra como ajustar proteína, montar refeições e organizar a rotina. Confira a oferta especial.';
+    bfBtn.textContent = 'Conhecer o +Maravilhosas';
+  } else {
+    // Meio-termo: oportunidade de ajuste
+    bfMsg.innerHTML = '🚀 Você está no caminho. Com alguns ajustes, dá para acelerar resultados e diminuir a gordura abdominal. Veja a oferta da Black Friday do <strong>+Maravilhosas</strong> e leve um plano simples para o dia a dia.';
+    bfBtn.textContent = 'Ver oferta Black Friday';
+  }
 
-        bfBtn.href = buildBfUrl(rcq, klassRCQ.tag);
-        bfBox.classList.remove('hide');
-      }
+  bfBtn.href = buildBfUrl(rcq, klassRCQ.tag);
+  bfBox.classList.remove('hide');
+}
+
 
       resultBox.scrollIntoView({behavior:'smooth',block:'center'});
       showToast('✅ Resultado calculado!');
