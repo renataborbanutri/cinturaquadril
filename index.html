@@ -274,7 +274,6 @@
   margin-left: auto;
   margin-right: auto;
 }
-.hero-logo { border-radius: 50%; }
 
   </style>
 </head>
@@ -482,6 +481,29 @@
       }
     }
 
+    function buildWhatsAppLink({
+    phone = '16153304647', // sem o "+"
+    nome, email, sexo, peso, altura, cintura, quadril, rcq, imc, klassRCQ, klassIMC
+  }){
+    const sexoTxt = sexo === 'F' ? 'Feminino' : (sexo === 'M' ? 'Masculino' : '');
+    const linhas = [
+      'Oi! Acabei de fazer o Teste Cintura/Quadril no site 💖',
+      'Quero orientação personalizada 👇',
+      '',
+      `Nome: ${nome}`,
+      `E-mail: ${email}`,
+      `Sexo: ${sexoTxt}`,
+      `Peso: ${peso} kg | Altura: ${altura} cm`,
+      `Cintura: ${cintura} cm | Quadril: ${quadril} cm`,
+      `RCQ: ${rcq.toFixed(2)} – ${klassRCQ.label.replace('✅ ','').replace('⚠️ ','')}`,
+      `IMC: ${imc.toFixed(2)} – ${klassIMC.label}`,
+      '',
+      'Pode me ajudar a começar agora? 🙏'
+    ];
+    const text = encodeURIComponent(linhas.join('\n'));
+    return `https://wa.me/${phone}?text=${text}`;
+  }
+
     const leadFields = ["nome","email","whats","idade","cidade","sexoLead"];
     
     function saveLeadDraft(){
@@ -576,7 +598,7 @@
       ? {
           tag: 'ok',
           label: '✅ RCQ em faixa saudável',
-          msg: 'Seu acúmulo de gordura abdominal está controlado para o seu perfil. Mantenha constância na alimentação e no treino de força para consolidar esse resultado.'
+          msg: 'Seu acúmulo de gordura abdominal está controlado para o seu perfil. Mantenha constância na alimentação e suplementação individualizada para consolidar esse resultado.'
         }
       : {
           tag: 'bad',
@@ -606,7 +628,7 @@
   } else if (imc < 25) {
     return { tag:'ok', label:'Peso saudável', msg:'Mantenha refeições equilibradas e treinos regulares para preservar massa magra.' };
   } else if (imc < 30) {
-    return { tag:'warn', label:'Sobrepeso', msg:'Ajustes na alimentação + treino de força ajudam a reduzir gordura e melhorar marcadores metabólicos.' };
+    return { tag:'warn', label:'Sobrepeso', msg:'Ajustes na alimentação + suplementação individualizada ajudam a reduzir gordura e melhorar marcadores metabólicos.' };
   } else {
     return { tag:'bad', label:'Obesidade', msg:'Atenção: um plano estruturado pode reduzir riscos e melhorar sua disposição no dia a dia.' };
   }
@@ -642,27 +664,43 @@
       statusLine.innerHTML = `<div style="text-align:center;margin-bottom:8px"><span class="tag ${klassRCQ.tag}">${klassRCQ.label}</span></div><p style="margin:0;font-size:14px;text-align:center">${klassRCQ.msg}</p>`;
       imcStatus.innerHTML = `<div style="text-align:center"><span class="tag ${klassIMC.tag}">${klassIMC.label}</span> <span style="font-size:14px;color:var(--ink-500)">${klassIMC.msg}</span></div>`;
 
-      // CTA Black Friday (agora DEPOIS do resultado)
+ // CTA Black Friday -> agora WhatsApp com resultados
 const bfBox = document.getElementById('bfBox');
 const bfMsg = document.getElementById('bfMsg');
 const bfBtn = document.getElementById('bfBtn');
 
 if (bfBox && bfMsg && bfBtn) {
+  // Mensagem do bloco (mantém a lógica por perfil, se quiser)
   if (klassRCQ.tag === 'bad' || klassIMC.tag === 'bad') {
-    // Resultado com pontos de atenção
-    bfMsg.innerHTML = '⚠️ Seus números pedem atenção. Na <strong>Black Friday do +Maravilhosas</strong> você encontra um passo a passo prático para reduzir gordura abdominal, desinflamar e ganhar energia. Clique e veja como começar hoje.';
-    bfBtn.textContent = 'Quero meu plano Black Friday';
+    bfMsg.innerHTML = '⚠️ Seus números pedem atenção. Fale comigo no <strong>WhatsApp</strong> para receber um passo a passo prático:';
+    bfBtn.textContent = 'Falar no WhatsApp agora';
   } else if (klassRCQ.tag === 'ok' && klassIMC.tag === 'ok') {
-    // Resultado bom: convite suave
-    bfMsg.innerHTML = '✅ Resultado ótimo! Mesmo com indicadores bons, se você sente <strong>dificuldade de perder gordura</strong>, <strong>falta de energia</strong> ou <strong>cansaço durante o dia</strong>, o <strong>+Maravilhosas</strong> mostra como ajustar proteína, montar refeições e organizar a rotina. Confira a oferta especial.';
-    bfBtn.textContent = 'Quero meu plano Black Friday';
+    bfMsg.innerHTML = '✅ Ótimo resultado! Se ainda sente dificuldade de perder gordura ou cansaço, chame no <strong>WhatsApp</strong> e eu te ajudo a ajustar proteína e refeições:';
+    bfBtn.textContent = 'Quero ajustar minha rotina';
   } else {
-    // Meio-termo: oportunidade de ajuste
-    bfMsg.innerHTML = '🚀 Você está no caminho. Com alguns ajustes, dá para acelerar resultados e diminuir a gordura abdominal. Veja a oferta da Black Friday do <strong>+Maravilhosas</strong> e leve um plano simples para o dia a dia.';
-    bfBtn.textContent = 'Ver oferta Black Friday';
+    bfMsg.innerHTML = '🚀 Você está no caminho! Com alguns ajustes dá pra acelerar muito. Fale no <strong>WhatsApp</strong> e receba orientações:';
+    bfBtn.textContent = 'Receber orientação no WhatsApp';
   }
 
-  bfBtn.href = buildBfUrl(rcq, klassRCQ.tag);
+  // Gera o link do WhatsApp com a mensagem + resultados
+  const waLink = buildWhatsAppLink({
+    phone: '16153304647',
+    nome: nomeResult,
+    email: emailResult,
+    sexo,
+    peso,
+    altura,
+    cintura: c,
+    quadril: q,
+    rcq,
+    imc,
+    klassRCQ,
+    klassIMC
+  });
+
+  bfBtn.href = waLink;               // abre a conversa no WhatsApp
+  bfBtn.target = '_blank';           // nova aba
+  bfBtn.rel = 'noopener';            // segurança
   bfBox.classList.remove('hide');
 }
 
